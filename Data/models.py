@@ -67,6 +67,7 @@ class Komentar:
     datum_objave: datetime = field(default_factory=datetime.now)
     id_zapiska: int = field(default=0)
     id_uporabnika: int = field(default=0)
+    id_nadkomentarja: Optional[int] = field(default=None)
 
 
 @dataclass_json
