@@ -13,18 +13,12 @@ CREATE TABLE zapisek (
 );
 
 
-INSERT INTO zapisek (id_zapiska, stevilo_strani, vrsta_dokumenta, naslov, jezik, download_link, id_predmeta, id_uporabnika)
-values (3, 54, 'pdf','numerične metode 2- vaje 2024/25', 'slovenščina', '//', 1, 1);
-
 CREATE TABLE predmet (
   id_predmeta INTEGER PRIMARY KEY,
   ime TEXT NOT NULL,
   izobrazevalni_program TEXT,
   letnik INTEGER
 );
-
-INSERT INTO predmet(id_predmeta, ime, izobrazevalni_program, letnik)
-values (1, 'Numerične metode 1', 'Finančna matematika- dodiplomski', 2)
 
 
 CREATE TABLE profesor (
@@ -33,10 +27,6 @@ CREATE TABLE profesor (
   priimek TEXT NOT NULL
 );
 
-INSERT INTO profesor(id_profesorja, ime, priimek)
-values(1, 'Ada',  'Šadl Praprotnik');
-
-SELECT * FROM profesor
 
 
 CREATE TABLE faks (
@@ -45,10 +35,6 @@ CREATE TABLE faks (
   univerza TEXT 
 );
 
-INSERT INTO faks(id_faksa, ime, univerza)
-values(1, 'Fakulteta za matematiko in fiziko', 'Univerza v Ljubljani');
-
-SELECT * FROM faks
 
 CREATE TABLE komentar (
   id_komentarja INTEGER PRIMARY KEY,
@@ -63,10 +49,6 @@ CREATE TABLE komentar (
 ALTER TABLE komentar
 ADD COLUMN id_nadkomentarja INTEGER REFERENCES komentar(id_komentarja);
 
-INSERT INTO komentar(id_komentarja, vsebina, id_zapiska, id_uporabnika)
-values(1, 'kvalitetni zapiski, malo napak', 2, 1)
-
-SELECT * FROM komentar
 
 CREATE TABLE uporabnik (
   id_uporabnika INTEGER PRIMARY KEY,
@@ -77,9 +59,6 @@ CREATE TABLE uporabnik (
   FOREIGN KEY (id_faksa) REFERENCES faks(id_faksa),
   CONSTRAINT check_role CHECK (role IN ('admin','user'))
 );
-
-INSERT INTO uporabnik(id_uporabnika, role, uporabnisko_ime, geslo, id_faksa)
-VALUES (1, 'user', 'j_novak', 'j_novak', 1);
 
 
 CREATE TABLE prenosi (
@@ -98,9 +77,6 @@ CREATE TABLE predmet_faks (
     FOREIGN KEY (id_faksa) REFERENCES faks(id_faksa)
 );
 
-INSERT INTO predmet_faks(id_predmeta, id_faksa)
-VALUES(1, 1)
-
 CREATE TABLE profesor_faks (
     id_profesorja INT,
     id_faksa INT,
@@ -109,8 +85,6 @@ CREATE TABLE profesor_faks (
     FOREIGN KEY (id_faksa) REFERENCES faks(id_faksa)
 );
 
-INSERT INTO profesor_faks(id_profesorja, id_faksa)
-VALUES(1, 1)
 
 
 CREATE TABLE profesor_predmet (
@@ -121,5 +95,4 @@ CREATE TABLE profesor_predmet (
     FOREIGN KEY (id_predmeta) REFERENCES predmet(id_predmeta)
 );
 
-INSERT INTO profesor_predmet(id_profesorja, id_predmeta)
-VALUES(1, 1)
+
