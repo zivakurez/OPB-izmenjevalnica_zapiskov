@@ -60,6 +60,9 @@ CREATE TABLE komentar (
   FOREIGN KEY (id_zapiska) REFERENCES zapisek(id_zapiska)
 );
 
+ALTER TABLE komentar
+ADD COLUMN id_nadkomentarja INTEGER REFERENCES komentar(id_komentarja);
+
 INSERT INTO komentar(id_komentarja, vsebina, id_zapiska, id_uporabnika)
 values(1, 'kvalitetni zapiski, malo napak', 2, 1)
 
