@@ -1,5 +1,5 @@
-from repository import Repo
-from models import Uporabnik, UporabnikDto
+from Data.repository import Repo
+from Data.models import Uporabnik, UporabnikDto
 import bcrypt
 from datetime import date
 from typing import Optional
