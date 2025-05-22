@@ -5,12 +5,12 @@ from typing import List, Optional
 
 
 class ZapisekService:
-    def init(self):
+    def __init__(self):
         self.repo = Repo()
 
     def dodaj_zapisek(self, zapisek: Zapisek, id_uporabnika: int) -> bool:
         user = self.repo.dobi_uporabnika(id_uporabnika)
-        if user is None or user.role != 'admin':
+        if user is None:
             return False
 
         if zapisek.datum_objave is None:
