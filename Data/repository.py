@@ -4,10 +4,12 @@ import psycopg2.extras
 import os
 from typing import List, Optional
 
-from models import (
+from Data.models import (
     Uporabnik, UporabnikDto, Zapisek, Komentar, Predmet, Profesor,
     Faks, Prenos, PredmetFaks, ProfesorFaks, ProfesorPredmet
 )
+
+import Data.auth_public as auth
 
 
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
@@ -17,7 +19,7 @@ DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
 
 class Repo:
     def __init__(self):
-        import auth  # datoteka z auth.py ali auth_public.py
+          # datoteka z auth.py ali auth_public.py
         self.conn = psycopg2.connect(
             database=auth.db,
             host=auth.host,

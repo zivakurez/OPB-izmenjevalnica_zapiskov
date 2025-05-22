@@ -13,7 +13,7 @@ class AuthService:
         #kodiramo geslo v bajte
         geslo_bytes = geslo.encode('utf-8')
 
-        #ustvarimo salt in hash
+        #ustvarimo salt in hash (zakodiranje gesla)
         salt = bcrypt.gensalt()
         password_hash = bcrypt.hashpw(geslo_bytes, salt)
 
