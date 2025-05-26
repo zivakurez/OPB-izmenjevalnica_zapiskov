@@ -108,19 +108,55 @@ class Repo:
 
 
 
-    # Fakultete, predmeti, profesorji (po potrebi)
+# Predmeti, profesorji, faksi
+    
 
-    def dobi_predmete(self) -> List[Predmet]:
-        self.cur.execute("SELECT * FROM predmet")
-        return [Predmet.from_dict(row) for row in self.cur.fetchall()]
+    def dobi_faks_po_imenu(self, ime: str) -> Optional[Faks]:
+        self.cur.execute("SELECT * FROM faks WHERE ime = %s", (ime,))
+        row = self.cur.fetchone()
+        return Faks.from_dict(row) if row else None
 
-    def dobi_profesorje(self) -> List[Profesor]:
-        self.cur.execute("SELECT * FROM profesor")
-        return [Profesor.from_dict(row) for row in self.cur.fetchall()]
+    def dobi_profesor_po_imenu(self, ime: str, priimek: str) -> Optional[Profesor]:
+        self.cur.execute("SELECT * FROM profesor WHERE ime = %s AND priimek = %s", (ime, priimek))
+        row = self.cur.fetchone()
+        return Profesor.from_dict(row) if row else None
 
-    def dobi_fakse(self) -> List[Faks]:
-        self.cur.execute("SELECT * FROM faks")
-        return [Faks.from_dict(row) for row in self.cur.fetchall()]
+    def dodaj_profesor(self, ime: str, priimek: str):
+        self.cur.execute("INSERT INTO profesor (ime, priimek) VALUES (%s, %s)", (ime, priimek))
+        self.conn.commit()
+
+    def dodaj_profesor_predmet(self, id_profesorja: int, id_predmeta: int):
+        self.cur.execute("""
+            INSERT INTO profesor_predmet (id_profesorja, id_predmeta)
+            VALUES (%s, %s)
+            ON CONFLICT DO NOTHING
+        """, (id_profesorja, id_predmeta))
+        self.conn.commit()
+
+    def dodaj_predmet(self, predmet: Predmet):
+        self.cur.execute("""
+            INSERT INTO predmet (ime, izobrazevalni_program, letnik)
+            VALUES (%s, %s, %s)
+        """, (predmet.ime, predmet.izobrazevalni_program, predmet.letnik))
+        self.conn.commit()
+
+    def dobi_predmet_polno(self, ime: str, izobrazevalni_program: str, letnik: int, id_faksa: int) -> Optional[Predmet]:
+        self.cur.execute("""
+            SELECT p.*
+            FROM predmet p
+            JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
+            WHERE p.ime = %s AND p.izobrazevalni_program = %s AND p.letnik = %s AND pf.id_faksa = %s
+        """, (ime, izobrazevalni_program, letnik, id_faksa))
+        row = self.cur.fetchone()
+        return Predmet.from_dict(row) if row else None
+
+    def dodaj_predmet_faks(self, id_predmeta: int, id_faksa: int):
+        self.cur.execute("""
+            INSERT INTO predmet_faks (id_predmeta, id_faksa)
+            VALUES (%s, %s)
+            ON CONFLICT DO NOTHING
+        """, (id_predmeta, id_faksa))
+        self.conn.commit()
 
     # zapri povezavo
     def zapri(self):

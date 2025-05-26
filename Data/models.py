@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from datetime import datetime
+from datetime import date
 from typing import Optional
 
 @dataclass_json
@@ -35,7 +36,7 @@ class Zapisek:
     stevilo_strani: int = field(default=0)
     vrsta_dokumenta: str = field(default="")
     naslov: str = field(default="")
-    datum_objave: str = field(default="")
+    datum_objave: Optional[date] = field(default=None)
     jezik: str = field(default="")
     download_link: str = field(default="")
     id_predmeta: int = field(default=0)

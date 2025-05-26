@@ -1,6 +1,6 @@
 from Data.repository import Repo
-from Data.models import Zapisek, Prenos
-from datetime import datetime
+from Data.models import Zapisek, Prenos, Predmet
+from datetime import datetime, date
 from typing import List, Optional
 
 
@@ -8,16 +8,83 @@ class ZapisekService:
     def __init__(self):
         self.repo = Repo()
 
-    def dodaj_zapisek(self, zapisek: Zapisek, id_uporabnika: int) -> bool:
+    def dodaj_zapisek(
+        self,
+        zapisek: Zapisek,
+        id_uporabnika: int,
+        ime_predmeta: str,
+        ime_faksa: str,
+        ime_profesorja: str,
+        priimek_profesorja: str,
+        letnik: int,
+        izobrazevalni_program: str
+    ) -> bool:
         user = self.repo.dobi_uporabnika(id_uporabnika)
-        if user is None:
+        if not user:
             return False
 
+        # Poišči faks
+        faks = self.repo.dobi_faks_po_imenu(ime_faksa)
+        if not faks:
+            print("Napaka: Faks ne obstaja!")
+            return False
+
+        # Poišči predmet po imenu, programu, letniku in faksu
+        predmet = self.repo.dobi_predmet_polno(
+            ime_predmeta,
+            izobrazevalni_program,
+            letnik,
+            faks.id_faksa
+        )
+
+        if not predmet:
+            # Predmet še ne obstaja → dodaj ga
+            nov_predmet = Predmet(
+                id_predmeta=0,
+                ime=ime_predmeta,
+                izobrazevalni_program=izobrazevalni_program,
+                letnik=letnik
+            )
+            self.repo.dodaj_predmet(nov_predmet)
+            predmet = self.repo.dobi_predmet_polno(
+                ime_predmeta,
+                izobrazevalni_program,
+                letnik,
+                faks.id_faksa
+            )
+            self.repo.dodaj_predmet_faks(predmet.id_predmeta, faks.id_faksa)
+
+        # Preveri profesorja
+        profesor = self.repo.dobi_profesor_po_imenu(ime_profesorja, priimek_profesorja)
+        if not profesor:
+            self.repo.dodaj_profesor(ime_profesorja, priimek_profesorja)
+            profesor = self.repo.dobi_profesor_po_imenu(ime_profesorja, priimek_profesorja)
+
+        # Poveži profesorja s predmetom
+        self.repo.dodaj_profesor_predmet(profesor.id_profesorja, predmet.id_predmeta)
+
+        # Preveri, da so zahtevana polja v zapisku podana
+        if zapisek.stevilo_strani is None or zapisek.stevilo_strani <= 0:
+            print("Napaka: Število strani mora biti večje od 0.")
+            return False
+        if not zapisek.jezik:
+            print("Napaka: Jezik je obvezen.")
+            return False
+        if not zapisek.vrsta_dokumenta:
+            print("Napaka: Vrsta dokumenta je obvezna.")
+            return False
+
+        # Nastavi datum objave, če ni podan
         if zapisek.datum_objave is None:
-            zapisek.datum_objave = datetime.now()
+            zapisek.datum_objave = date.today()
+
+        # Dodaj zapisek
+        zapisek.id_predmeta = predmet.id_predmeta
+        zapisek.id_uporabnika = id_uporabnika
 
         self.repo.dodaj_zapisek(zapisek)
         return True
+
 
     def prenesi_zapisek(self, id_uporabnika: int, id_zapiska: int) -> bool:
         zapiski = self.repo.dobi_zapiske()
