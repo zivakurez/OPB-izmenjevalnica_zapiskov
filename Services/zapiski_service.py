@@ -31,28 +31,33 @@ class ZapisekService:
 
         # Poišči predmet po imenu, programu, letniku in faksu
         predmet = self.repo.dobi_predmet_polno(
-            ime_predmeta,
-            izobrazevalni_program,
-            letnik,
-            faks.id_faksa
-        )
+                ime_predmeta,
+                izobrazevalni_program,
+                letnik
+                )
 
         if not predmet:
             # Predmet še ne obstaja → dodaj ga
             nov_predmet = Predmet(
-                id_predmeta=0,
                 ime=ime_predmeta,
                 izobrazevalni_program=izobrazevalni_program,
                 letnik=letnik
             )
-            self.repo.dodaj_predmet(nov_predmet)
-            predmet = self.repo.dobi_predmet_polno(
-                ime_predmeta,
-                izobrazevalni_program,
-                letnik,
-                faks.id_faksa
+            
+            # dodaj v bazo in pridobi ustvarjeni id
+            id_predmeta = self.repo.dodaj_predmet(nov_predmet)
+
+            # sestavi predmet objekt
+            predmet = Predmet(
+                id_predmeta=id_predmeta,
+                ime=ime_predmeta,
+                izobrazevalni_program=izobrazevalni_program,
+                letnik=letnik
             )
+
+            # poveži predmet in faks
             self.repo.dodaj_predmet_faks(predmet.id_predmeta, faks.id_faksa)
+
 
         # Preveri profesorja
         profesor = self.repo.dobi_profesor_po_imenu(ime_profesorja, priimek_profesorja)
@@ -74,10 +79,6 @@ class ZapisekService:
         if not zapisek.vrsta_dokumenta:
             print("Napaka: Vrsta dokumenta je obvezna.")
             return False
-
-        # Nastavi datum objave, če ni podan
-        if zapisek.datum_objave is None:
-            zapisek.datum_objave = date.today()
 
         # Dodaj zapisek
         zapisek.id_predmeta = predmet.id_predmeta

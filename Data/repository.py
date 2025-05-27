@@ -64,10 +64,12 @@ class Repo:
 
     def dodaj_zapisek(self, z: Zapisek):
         self.cur.execute("""
-            INSERT INTO zapisek (id_zapiska, stevilo_strani, vrsta_dokumenta, naslov, jezik, download_link, id_predmeta, id_uporabnika)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO zapisek (
+                stevilo_strani, vrsta_dokumenta, naslov,
+                jezik, download_link, id_predmeta, id_uporabnika
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
         """, (
-            z.id_zapiska, z.stevilo_strani, z.vrsta_dokumenta, z.naslov,
+            z.stevilo_strani, z.vrsta_dokumenta, z.naslov,
             z.jezik, z.download_link, z.id_predmeta, z.id_uporabnika
         ))
         self.conn.commit()
@@ -88,12 +90,13 @@ class Repo:
 
     def dodaj_komentar(self, k: Komentar):
         self.cur.execute("""
-            INSERT INTO komentar (id_komentarja, vsebina, id_zapiska, id_uporabnika)
+            INSERT INTO komentar (vsebina, id_zapiska, id_uporabnika, id_nadkomentarja)
             VALUES (%s, %s, %s, %s)
         """, (
-            k.id_komentarja, k.vsebina, k.id_zapiska, k.id_uporabnika
+            k.vsebina, k.id_zapiska, k.id_uporabnika, k.id_nadkomentarja
         ))
         self.conn.commit()
+
         
     def izbrisi_komentarje_zapiska(self, id_zapiska: int):
         self.cur.execute("DELETE FROM komentar WHERE id_zapiska = %s", (id_zapiska,))
@@ -143,21 +146,25 @@ class Repo:
             ON CONFLICT DO NOTHING
         """, (id_profesorja, id_predmeta))
         self.conn.commit()
-
-    def dodaj_predmet(self, predmet: Predmet):
+        
+    def dodaj_predmet(self, predmet: Predmet) -> int:
         self.cur.execute("""
             INSERT INTO predmet (ime, izobrazevalni_program, letnik)
             VALUES (%s, %s, %s)
+            RETURNING id_predmeta
         """, (predmet.ime, predmet.izobrazevalni_program, predmet.letnik))
+        
+        id_predmeta = self.cur.fetchone()[0]
         self.conn.commit()
+        return id_predmeta
 
-    def dobi_predmet_polno(self, ime: str, izobrazevalni_program: str, letnik: int, id_faksa: int) -> Optional[Predmet]:
+
+    def dobi_predmet_polno(self, ime: str, izobrazevalni_program: str, letnik: int) -> Optional[Predmet]:
         self.cur.execute("""
-            SELECT p.*
-            FROM predmet p
-            JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
-            WHERE p.ime = %s AND p.izobrazevalni_program = %s AND p.letnik = %s AND pf.id_faksa = %s
-        """, (ime, izobrazevalni_program, letnik, id_faksa))
+            SELECT *
+            FROM predmet
+            WHERE ime = %s AND izobrazevalni_program = %s AND letnik = %s
+        """, (ime, izobrazevalni_program, letnik))
         row = self.cur.fetchone()
         return Predmet.from_dict(row) if row else None
 

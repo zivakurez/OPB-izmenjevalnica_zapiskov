@@ -8,17 +8,16 @@ class KomentarService:
     def __init__(self):
         self.repo = Repo()
 
-    def dodaj_komentar(self, vsebina: str, id_zapiska: int, id_uporabnika: int) -> bool:
-        komentar = Komentar(
-            id_komentarja=0,
-            vsebina=vsebina,
-            datum_objave=datetime.now(),
-            id_zapiska=id_zapiska,
-            id_uporabnika=id_uporabnika,
-            id_nadkomentarja=None
-        )
-        self.repo.dodaj_komentar(komentar)
-        return True
+def dodaj_komentar(self, vsebina: str, id_zapiska: int, id_uporabnika: int) -> bool:
+    komentar = Komentar(
+        vsebina=vsebina,
+        id_zapiska=id_zapiska,
+        id_uporabnika=id_uporabnika,
+        id_nadkomentarja=None
+    )
+    self.repo.dodaj_komentar(komentar)
+    return True
+
 
     def odgovori_na_komentar(self, vsebina: str, id_nadkomentarja: int, id_uporabnika: int) -> bool:
         nadkomentar = self.repo.dobi_komentar(id_nadkomentarja)
@@ -26,9 +25,7 @@ class KomentarService:
             return False
 
         komentar = Komentar(
-            id_komentarja=0,
             vsebina=vsebina,
-            datum_objave=datetime.now(),
             id_zapiska=nadkomentar.id_zapiska,
             id_uporabnika=id_uporabnika,
             id_nadkomentarja=id_nadkomentarja
