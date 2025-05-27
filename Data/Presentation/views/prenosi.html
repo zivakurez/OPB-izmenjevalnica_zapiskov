@@ -1,0 +1,27 @@
+%rebase('osnova.html', naslov='Prenosi zapiskov', stran='prenosi')
+
+<div>
+  <br>
+  <div style="display: flex;">
+    <div style="flex:1;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID zapiska</th>
+            <th>Uporabnik</th>
+            <th>Čas prenosa</th>
+          </tr>
+        </thead>
+        <tbody>
+        %for prenos in prenosi:
+          <tr>
+            <td>{{prenos.id_zapiska}}</td>
+            <td>{{prenos.uporabnik}}</td>
+            <td>{{prenos.cas_prenosa}}</td>
+          </tr>
+        %end
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
