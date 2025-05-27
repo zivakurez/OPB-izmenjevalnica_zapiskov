@@ -13,7 +13,6 @@ from Services.zapiski_service import ZapisekService
 service = ZapisekService()
 
 nov_zapisek = Zapisek(
-    id_zapiska = 4,
     stevilo_strani = 30,
     naslov="Zapiski iz NUM",
     id_predmeta = 1,
