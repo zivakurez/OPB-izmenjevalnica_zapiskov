@@ -45,21 +45,21 @@ zadnji = zapiski[-1]
 # 3. Dodaj komentar na zapisek
 # -----------------------------
 
-uspesno_komentar = komentar_service.dodaj_komentar(
-    vsebina="Zelo uporaben zapisek, hvala!",
-    id_zapiska=zadnji.id_zapiska,
-    id_uporabnika=id_uporabnika
-)
+# uspesno_komentar = komentar_service.dodaj_komentar(
+#     vsebina="Zelo uporaben zapisek, hvala!",
+#     id_zapiska=zadnji.id_zapiska,
+#     id_uporabnika=id_uporabnika
+# )
 
-print("✅ Dodajanje komentarja:", "Uspelo" if uspesno_komentar else "Ni uspelo")
+# print("✅ Dodajanje komentarja:", "Uspelo" if uspesno_komentar else "Ni uspelo")
 
 # -----------------------------
 # 4. Prikaži komentarje za zapisek
 # -----------------------------
-komentarji = komentar_service.komentarji_za_zapisek(zadnji.id_zapiska)
-print(f"💬 Komentarji ({len(komentarji)}):")
-for k in komentarji:
-    print("-", k.vsebina)
+# komentarji = komentar_service.komentarji_za_zapisek(zadnji.id_zapiska)
+# print(f"💬 Komentarji ({len(komentarji)}):")
+# for k in komentarji:
+#     print("-", k.vsebina)
 
 # -----------------------------
 # 5. Izbriši zapisek kot avtor

@@ -99,8 +99,20 @@ class Repo:
 
         
     def izbrisi_komentarje_zapiska(self, id_zapiska: int):
-        self.cur.execute("DELETE FROM komentar WHERE id_zapiska = %s", (id_zapiska,))
+        # Najprej izbriši odgovore (tiste z nadkomentarjem)
+        self.cur.execute("""
+            DELETE FROM komentar
+            WHERE id_zapiska = %s AND id_nadkomentarja IS NOT NULL
+        """, (id_zapiska,))
+        
+        # Nato še osnovne komentarje
+        self.cur.execute("""
+            DELETE FROM komentar
+            WHERE id_zapiska = %s AND id_nadkomentarja IS NULL
+        """, (id_zapiska,))
+        
         self.conn.commit()
+
 
 
     # Prenosi
