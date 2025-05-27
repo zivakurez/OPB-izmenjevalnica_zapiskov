@@ -94,6 +94,10 @@ class Repo:
             k.id_komentarja, k.vsebina, k.id_zapiska, k.id_uporabnika
         ))
         self.conn.commit()
+        
+    def izbrisi_komentarje_zapiska(self, id_zapiska: int):
+        self.cur.execute("DELETE FROM komentar WHERE id_zapiska = %s", (id_zapiska,))
+        self.conn.commit()
 
 
     # Prenosi
@@ -111,7 +115,9 @@ class Repo:
         """, (id_uporabnika,))
         return [Prenos.from_dict(row) for row in self.cur.fetchall()]
 
-
+    def izbrisi_prenose_zapiska(self, id_zapiska: int):
+        self.cur.execute("DELETE FROM prenosi WHERE id_zapiska = %s", (id_zapiska,))
+        self.conn.commit()
 
 # Predmeti, profesorji, faksi
     
@@ -162,6 +168,15 @@ class Repo:
             ON CONFLICT DO NOTHING
         """, (id_predmeta, id_faksa))
         self.conn.commit()
+        
+    def dodaj_profesor_faks(self, id_profesorja: int, id_faksa: int):
+        self.cur.execute("""
+            INSERT INTO profesor_faks (id_profesorja, id_faksa)
+            VALUES (%s, %s)
+            ON CONFLICT DO NOTHING
+        """, (id_profesorja, id_faksa))
+        self.conn.commit()
+
 
     # zapri povezavo
     def zapri(self):
