@@ -71,6 +71,11 @@ class Repo:
             z.jezik, z.download_link, z.id_predmeta, z.id_uporabnika
         ))
         self.conn.commit()
+        
+    def izbrisi_zapisek(self, id_zapiska: int):
+        self.cur.execute("DELETE FROM zapisek WHERE id_zapiska = %s", (id_zapiska,))
+        self.conn.commit()
+
 
 
     # Komentarji

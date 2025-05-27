@@ -107,3 +107,22 @@ class ZapisekService:
         preneseni_idji = [p.id_zapiska for p in prenosi]
         vsi_zapiski = self.repo.dobi_zapiske()
         return [z for z in vsi_zapiski if z.id_zapiska in preneseni_idji]
+    
+    def izbrisi_zapisek(self, id_zapiska: int, id_uporabnika: int) -> bool:
+        zapiski = self.repo.dobi_zapiske()
+        zapisek = next((z for z in zapiski if z.id_zapiska == id_zapiska), None)
+        if not zapisek:
+            print("Napaka: Zapisek ne obstaja!")
+            return False
+
+        uporabnik = self.repo.dobi_uporabnika(id_uporabnika)
+        if not uporabnik:
+            print("Napaka: Uporabnik ne obstaja!")
+            return False
+
+        if zapisek.id_uporabnika == id_uporabnika or uporabnik.role == "admin":
+            self.repo.izbrisi_zapisek(id_zapiska)
+            return True
+
+        print("Napaka: Nimate pravice za izbris tega zapiska.")
+        return False
