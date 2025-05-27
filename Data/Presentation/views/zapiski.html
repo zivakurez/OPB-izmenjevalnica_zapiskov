@@ -1,0 +1,40 @@
+%rebase('osnova.html', naslov='Zapiski', stran='zapiski')
+
+<div>
+  <br>
+  <div style="display: flex;">
+    <div style="flex:1;">
+      <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Naslov</th>
+            <th>Datum objave</th>
+            <th>število strani</th>
+            <th>Vrsta dokumenta</th>
+            <th>Jezik</th>
+            <th>Download link</th>
+            <th>Predmet</th>
+            <th>Avtor</th>
+          </tr>
+        </thead>
+        <tbody>
+        %for zapisek in zapiski:
+          <tr>
+            <td>{{zapisek.id_zapiska}}</td>
+            <td>{{zapisek.naslov}}</td>
+            <td>{{zapisek.datum_objave}}</td>
+            <td>{{zapisek.stevilo_strani}}</td>
+            <td>{{zapisek.vrsta_dokumenta}}</td>
+            <td>{{zapisek.jezik}}</td>
+            <td>{{zapisek.download_link}}</td>
+            <td>{{zapisek.id_predmeta}}</td>
+            <td>{{zapisek.id_uporabnika}}</td>
+            <th></th>
+          </tr>
+        %end
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
