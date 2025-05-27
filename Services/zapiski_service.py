@@ -62,7 +62,8 @@ class ZapisekService:
 
         # Poveži profesorja s predmetom
         self.repo.dodaj_profesor_predmet(profesor.id_profesorja, predmet.id_predmeta)
-
+        self.repo.dodaj_profesor_faks(profesor.id_profesorja, faks.id_faksa)
+        
         # Preveri, da so zahtevana polja v zapisku podana
         if zapisek.stevilo_strani is None or zapisek.stevilo_strani <= 0:
             print("Napaka: Število strani mora biti večje od 0.")
@@ -121,6 +122,10 @@ class ZapisekService:
             return False
 
         if zapisek.id_uporabnika == id_uporabnika or uporabnik.role == "admin":
+            # najprej izbrišemo komentarje, prenose, povezave
+            self.repo.izbrisi_komentarje_zapiska(id_zapiska)
+            self.repo.izbrisi_prenose_zapiska(id_zapiska)
+            # nato zapisek
             self.repo.izbrisi_zapisek(id_zapiska)
             return True
 
