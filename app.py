@@ -1,4 +1,5 @@
-from bottle import get, run, request, template, redirect, static_file, url, response, template
+from Presentation.bottleext import get, post, run, request, template, redirect, static_file, url, response, template_user
+
 from Services.zapiski_service import ZapisekService
 import os
 
@@ -10,7 +11,7 @@ RELOADER = os.environ.get('BOTTLE_RELOADER', True)
 # Nastavi mapo s predlogami
 from bottle import TEMPLATE_PATH
 import os
-TEMPLATE_PATH.insert(0, os.path.abspath("Presentation/views"))
+#TEMPLATE_PATH.insert(0, os.path.abspath("Presentation/views"))
 
 @get('/static/<filename:path>')
 def static(filename):
