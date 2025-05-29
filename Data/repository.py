@@ -91,6 +91,39 @@ class Repo:
     def izbrisi_zapisek(self, id_zapiska: int):
         self.cur.execute("DELETE FROM zapisek WHERE id_zapiska = %s", (id_zapiska,))
         self.conn.commit()
+        
+    def dobi_zapiske_za_prikaz(self) -> List[dict]:
+        self.cur.execute("""
+            SELECT 
+                z.id_zapiska,
+                z.naslov,
+                z.datum_objave,
+                z.stevilo_strani,
+                z.vrsta_dokumenta,
+                z.jezik,
+                z.download_link,
+
+                u.uporabnisko_ime AS ime_uporabnika,
+                p.ime AS ime_predmeta,
+                p.izobrazevalni_program,
+                f.ime AS ime_fakultete,
+                f.univerza,
+                string_agg(DISTINCT pr.ime || ' ' || pr.priimek, ', ') AS profesorji
+
+            FROM zapisek z
+            JOIN uporabnik u ON z.id_uporabnika = u.id_uporabnika
+            JOIN predmet p ON z.id_predmeta = p.id_predmeta
+            JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
+            JOIN faks f ON pf.id_faksa = f.id_faksa
+            LEFT JOIN profesor_predmet pp ON p.id_predmeta = pp.id_predmeta
+            LEFT JOIN profesor pr ON pp.id_profesorja = pr.id_profesorja
+
+            GROUP BY z.id_zapiska, u.uporabnisko_ime, p.ime, p.izobrazevalni_program, f.ime, f.univerza
+            ORDER BY z.datum_objave DESC;
+
+        """)
+        return [dict(row) for row in self.cur.fetchall()]
+
 
 
 

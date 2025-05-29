@@ -64,5 +64,9 @@ zadnji = zapiski[-1]
 # -----------------------------
 # 5. Izbriši zapisek kot avtor
 # -----------------------------
-brisanje = zapisek_service.izbrisi_zapisek(zadnji.id_zapiska, id_uporabnika)
-print("🗑️ Brisanje zapiska:", "Uspelo" if brisanje else "Ni uspelo")
+# brisanje = zapisek_service.izbrisi_zapisek(zadnji.id_zapiska, id_uporabnika)
+# print("🗑️ Brisanje zapiska:", "Uspelo" if brisanje else "Ni uspelo")
+
+zapiski = zapisek_service.pridobi_zapiske_s_podatki()
+print(zapiski[0].keys())
+

@@ -19,7 +19,7 @@ def static(filename):
 
 @get('/')
 def index():
-    zapiski = service.pridobi_vse_zapiske()
+    zapiski = service.pridobi_zapiske_s_podatki()
     return template('zapiski.html', zapiski=zapiski)
 
 @get('/moji-prenosi/<id_uporabnika:int>')

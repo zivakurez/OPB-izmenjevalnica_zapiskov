@@ -10,27 +10,34 @@
             <th>ID</th>
             <th>Naslov</th>
             <th>Datum objave</th>
-            <th>število strani</th>
+            <th>Število strani</th>
             <th>Vrsta dokumenta</th>
             <th>Jezik</th>
             <th>Download link</th>
             <th>Predmet</th>
+            <th>Izobraževalni program</th>
+            <th>Fakulteta</th>
+            <th>Univerza</th>
+            <th>Profesor(ji)</th>
             <th>Avtor</th>
           </tr>
         </thead>
         <tbody>
         %for zapisek in zapiski:
           <tr>
-            <td>{{zapisek.id_zapiska}}</td>
-            <td>{{zapisek.naslov}}</td>
-            <td>{{zapisek.datum_objave}}</td>
-            <td>{{zapisek.stevilo_strani}}</td>
-            <td>{{zapisek.vrsta_dokumenta}}</td>
-            <td>{{zapisek.jezik}}</td>
-            <td>{{zapisek.download_link}}</td>
-            <td>{{zapisek.id_predmeta}}</td>
-            <td>{{zapisek.id_uporabnika}}</td>
-            <th></th>
+            <td>{{ zapisek['id_zapiska'] }}</td>
+            <td>{{ zapisek['naslov'] }}</td>
+            <td>{{ zapisek['datum_objave'] }}</td>
+            <td>{{ zapisek['stevilo_strani'] }}</td>
+            <td>{{ zapisek['vrsta_dokumenta'] }}</td>
+            <td>{{ zapisek['jezik'] }}</td>
+            <td><a href="{{ zapisek['download_link'] }}" target="_blank">Prenesi</a></td>
+            <td>{{ zapisek['ime_predmeta'] }}</td>
+            <td>{{ zapisek['izobrazevalni_program'] }}</td>
+            <td>{{ zapisek['ime_fakultete'] }}</td>
+            <td>{{ zapisek['univerza'] }}</td>
+            <td>{{ zapisek['profesorji'] }}</td>
+            <td>{{ zapisek['ime_uporabnika'] }}</td>
           </tr>
         %end
         </tbody>

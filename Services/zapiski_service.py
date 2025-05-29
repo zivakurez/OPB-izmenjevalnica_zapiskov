@@ -132,3 +132,6 @@ class ZapisekService:
 
         print("Napaka: Nimate pravice za izbris tega zapiska.")
         return False
+    
+    def pridobi_zapiske_s_podatki(self) -> List[dict]:
+        return self.repo.dobi_zapiske_za_prikaz()
