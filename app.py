@@ -27,6 +27,12 @@ def moji_prenosi(id_uporabnika):
     preneseni_zapiski = service.pridobi_prenesene_zapiske(id_uporabnika)
     return template('prenosi.html', prenosi=preneseni_zapiski)
 
+@get('/prijava')
+def prikazi_prijavo():
+    return template('prijava.html', napaka=None)
+
+
+
 if __name__ == "__main__":
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
 

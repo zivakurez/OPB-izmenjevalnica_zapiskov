@@ -1,5 +1,6 @@
 
 
+
 body {
   font-family: Arial, sans-serif;
   background-color: #f7f7f7;
@@ -7,12 +8,13 @@ body {
 }
 
 .container {
-  max-width: 900px;
+  width: 100%;
   margin: auto;
   background-color: white;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow-x: auto; /* omogoči scroll če tabela preseže širino */
 }
 
 h2 {
@@ -51,4 +53,59 @@ table.table thead th {
   background-color: #f8c8dc;
   font-weight: bold;
   color: #333;
+}
+
+table {
+  min-width: 1000px; /* ali več, če imaš veliko stolpcev */
+}
+
+
+
+
+form.login-form {
+  max-width: 400px;
+  margin: auto;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.btn.btn-primary {
+  background-color: #f8c8dc;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn.btn-primary:hover {
+  background-color: #f4b0cd;
+}
+
+.opozorilo {
+  margin-top: 15px;
+  color: red;
+  font-weight: bold;
+  text-align: center;
 }
