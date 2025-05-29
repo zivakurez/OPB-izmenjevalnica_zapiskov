@@ -89,17 +89,20 @@ class ZapisekService:
 
 
     def prenesi_zapisek(self, id_uporabnika: int, id_zapiska: int) -> bool:
-        zapiski = self.repo.dobi_zapiske()
-        if not any(z.id_zapiska == id_zapiska for z in zapiski):
+        zapisek = self.repo.dobi_zapisek_po_id(id_zapiska)
+        if not zapisek:
+            print("Zapisek ne obstaja.")
             return False
 
         prenosi = self.repo.dobi_prenose_uporabnika(id_uporabnika)
         if any(p.id_zapiska == id_zapiska for p in prenosi):
+            print("Zapisek je že prenesen.")
             return False
 
         prenos = Prenos(id_uporabnika=id_uporabnika, id_zapiska=id_zapiska)
         self.repo.dodaj_prenos(prenos)
         return True
+
 
     def pridobi_vse_zapiske(self) -> List[Zapisek]:
         return self.repo.dobi_zapiske()
@@ -107,12 +110,11 @@ class ZapisekService:
     def pridobi_prenesene_zapiske(self, id_uporabnika: int) -> List[Zapisek]:
         prenosi = self.repo.dobi_prenose_uporabnika(id_uporabnika)
         preneseni_idji = [p.id_zapiska for p in prenosi]
-        vsi_zapiski = self.repo.dobi_zapiske()
-        return [z for z in vsi_zapiski if z.id_zapiska in preneseni_idji]
+        return self.repo.dobi_zapiske_po_idjih(preneseni_idji)
+
     
     def izbrisi_zapisek(self, id_zapiska: int, id_uporabnika: int) -> bool:
-        zapiski = self.repo.dobi_zapiske()
-        zapisek = next((z for z in zapiski if z.id_zapiska == id_zapiska), None)
+        zapisek = self.repo.dobi_zapisek_po_id(id_zapiska)
         if not zapisek:
             print("Napaka: Zapisek ne obstaja!")
             return False
@@ -123,10 +125,8 @@ class ZapisekService:
             return False
 
         if zapisek.id_uporabnika == id_uporabnika or uporabnik.role == "admin":
-            # najprej izbrišemo komentarje, prenose, povezave
             self.repo.izbrisi_komentarje_zapiska(id_zapiska)
             self.repo.izbrisi_prenose_zapiska(id_zapiska)
-            # nato zapisek
             self.repo.izbrisi_zapisek(id_zapiska)
             return True
 

@@ -61,6 +61,20 @@ class Repo:
             SELECT * FROM zapisek
         """)
         return [Zapisek.from_dict(row) for row in self.cur.fetchall()]
+    
+    def dobi_zapisek_po_id(self, id_zapiska: int) -> Optional[Zapisek]:
+        self.cur.execute("SELECT * FROM zapisek WHERE id_zapiska = %s", (id_zapiska,))
+        row = self.cur.fetchone()
+        return Zapisek.from_dict(row) if row else None
+    
+    def dobi_zapiske_po_idjih(self, idji: List[int]) -> List[Zapisek]:
+        if not idji:
+            return []
+        sql = "SELECT * FROM zapisek WHERE id_zapiska = ANY(%s)"
+        self.cur.execute(sql, (idji,))
+        rows = self.cur.fetchall()
+        return [Zapisek.from_dict(row) for row in rows]
+
 
     def dodaj_zapisek(self, z: Zapisek):
         self.cur.execute("""
