@@ -2,6 +2,8 @@ from Presentation.bottleext import get, post, run, request, template, redirect, 
 
 from Services.zapiski_service import ZapisekService
 import os
+from bottle import post, request, response, redirect
+from Data.repository import Repo
 
 service = ZapisekService()
 
@@ -32,6 +34,32 @@ def prikazi_prijavo():
     return template('prijava.html', napaka=None)
 
 
+@post('/prijava')
+def obdelaj_prijavo():
+    uporabnisko_ime = request.forms.get('uporabnisko_ime')
+    geslo = request.forms.get('geslo')
+
+    repo = Repo()
+    uporabnik = repo.preveri_prijavo(uporabnisko_ime, geslo)
+
+    if uporabnik:
+        response.set_cookie("user_id", str(uporabnik.id_uporabnika), secret='skrivnost123')
+        redirect('/profil')
+    else:
+        return template('prijava.html', napaka="Napačno uporabniško ime ali geslo")
+    
+@get('/profil')
+def profil():
+    user_id = request.get_cookie("user_id", secret='skrivnost123')
+    if not user_id:
+        redirect('/prijava')
+
+    repo = Repo()
+    uporabnik = repo.dobi_uporabnika(int(user_id))
+    zapiski = repo.dobi_zapiske_uporabnika_za_prikaz(int(user_id))
+    prenosi = repo.dobi_prenose_uporabnika(int(user_id))
+
+    return template('profil.html', uporabnik=uporabnik, zapiski=zapiski, prenosi=prenosi)
 
 if __name__ == "__main__":
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
