@@ -19,7 +19,7 @@ import os
 def static(filename):
     return static_file(filename, root='Presentation/static')
 
-@get('/')
+@get('/vsi_zapiski')
 def index():
     zapiski = service.pridobi_zapiske_s_podatki()
     return template('zapiski.html', zapiski=zapiski)
@@ -29,8 +29,8 @@ def moji_prenosi(id_uporabnika):
     preneseni_zapiski = service.pridobi_prenesene_zapiske(id_uporabnika)
     return template('prenosi.html', prenosi=preneseni_zapiski)
 
-@get('/prijava')
-def prikazi_prijavo():
+@get('/')
+def zacetna_stran():
     return template('prijava.html', napaka=None)
 
 
