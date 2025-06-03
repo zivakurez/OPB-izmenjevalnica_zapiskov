@@ -78,6 +78,16 @@ def isci_zapiske():
     return template('iskanje_zapiskov.html', zapiski=zapiski)
 
 
+@get('/moji-zapiski')
+def moji_zapiski():
+    user_id = request.get_cookie("user_id", secret='skrivnost123')
+    if not user_id:
+        redirect('/prijava')
+
+    repo = Repo()
+    zapiski = repo.dobi_zapiske_uporabnika_za_prikaz(int(user_id))
+    return template('moji_zapiski.html', zapiski=zapiski)
+
 
 if __name__ == "__main__":
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
