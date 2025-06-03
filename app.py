@@ -4,6 +4,7 @@ from Services.zapiski_service import ZapisekService
 import os
 from bottle import post, request, response, redirect
 from Data.repository import Repo
+from Data.models import Zapisek
 
 service = ZapisekService()
 
@@ -96,6 +97,69 @@ def moji_zapiski():
     repo = Repo()
     zapiski = repo.dobi_zapiske_uporabnika_za_prikaz(int(user_id))
     return template('moji_zapiski.html', zapiski=zapiski)
+
+
+@get('/dodaj-zapisek')
+def prikazi_dodaj_zapisek():
+    user_id = request.get_cookie("user_id", secret='skrivnost123')
+    if not user_id:
+        redirect('/prijava')
+
+    predmeti = service.repo.vrni_vse_predmete()
+    programi = service.repo.vrni_vse_programe()
+    fakultete = service.repo.vrni_vse_fakultete()
+    imena_profesorjev = service.repo.vrni_vsa_imena_profesorjev()
+    priimki_profesorjev = service.repo.vse_priimke_profesorjev()
+
+    return template('dodaj_zapisek.html',
+                    predmeti=predmeti,
+                    programi=programi,
+                    fakultete=fakultete,
+                    imena_profesorjev=imena_profesorjev,
+                    priimki_profesorjev=priimki_profesorjev,
+                    napaka=None)
+
+@post('/dodaj-zapisek')
+def shrani_zapisek():
+    user_id = request.get_cookie("user_id", secret='skrivnost123')
+    if not user_id:
+        redirect('/prijava')
+
+    try:
+        zapisek = Zapisek(
+            naslov=request.forms.get('naslov'),
+            stevilo_strani=int(request.forms.get('stevilo_strani')),
+            vrsta_dokumenta=request.forms.get('vrsta_dokumenta'),
+            jezik=request.forms.get('jezik'),
+            download_link=request.forms.get('download_link')
+        )
+
+        predmet = request.forms.get('predmet')
+        faks = request.forms.get('faks')
+        program = request.forms.get('program')
+        letnik = int(request.forms.get('letnik'))
+
+        ime_profesorja = request.forms.get('ime_profesorja')
+        priimek_profesorja = request.forms.get('priimek_profesorja')
+
+        uspeh = service.dodaj_zapisek(
+            zapisek,
+            int(user_id),
+            predmet.strip().lower().capitalize(),
+            faks.strip().lower().capitalize(),
+            ime_profesorja.strip().lower().capitalize(),
+            priimek_profesorja.strip().lower().capitalize(),
+            letnik,
+            program.strip().lower().capitalize()
+        )
+
+        if uspeh:
+            redirect('/profil')
+        else:
+            return template('dodaj_zapisek.html', napaka="Napaka pri dodajanju zapiska.")
+    except Exception as e:
+        return template('dodaj_zapisek.html', napaka=f"Napaka: {str(e)}")
+
 
 
 if __name__ == "__main__":

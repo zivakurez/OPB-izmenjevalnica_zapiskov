@@ -138,5 +138,21 @@ class ZapisekService:
     
     def filtriraj_zapiske(self, predmet, fakulteta, program, profesor):
         return self.repo.filtriraj_zapiske(predmet, fakulteta, program, profesor)
+    
+    def vrni_vse_predmete(self):
+        return self.repo.vrni_vse_predmete()
+
+    def vrni_vse_fakultete(self):
+        return self.repo.vrni_vse_fakultete()
+
+    def vrni_vse_programe(self):
+        return self.repo.vrni_vse_programe()
+
+    def vrni_vsa_imena_profesorjev(self):
+        return self.repo.vrni_vsa_imena_profesorjev()
+
+    def vrni_vse_priimke_profesorjev(self):
+        return self.repo.vrni_vse_priimke_profesorjev()
+
 
 

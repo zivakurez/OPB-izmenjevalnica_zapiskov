@@ -341,6 +341,34 @@ class Repo:
         row = self.cur.fetchone()
         return Uporabnik.from_dict(row) if row else None
 
+    #poizvedbe
+
+    # Predmeti
+    def vrni_vse_predmete(self) -> List[str]:
+        self.cur.execute("SELECT DISTINCT ime FROM predmet ORDER BY ime")
+        return [row["ime"] for row in self.cur.fetchall()]
+
+    # Fakultete
+    def vrni_vse_fakultete(self) -> List[str]:
+        self.cur.execute("SELECT DISTINCT ime FROM faks ORDER BY ime")
+        return [row["ime"] for row in self.cur.fetchall()]
+
+    # Programi (iz atributa pri predmetu)
+    def vrni_vse_programe(self) -> List[str]:
+        self.cur.execute("SELECT DISTINCT izobrazevalni_program FROM predmet ORDER BY izobrazevalni_program")
+        return [row["izobrazevalni_program"] for row in self.cur.fetchall()]
+
+    # Imena profesorjev
+    def vrni_vsa_imena_profesorjev(self) -> List[str]:
+        self.cur.execute("SELECT DISTINCT ime FROM profesor ORDER BY ime")
+        return [row["ime"] for row in self.cur.fetchall()]
+
+    # Priimki profesorjev
+    def vrni_vse_priimke_profesorjev(self) -> List[str]:
+        self.cur.execute("SELECT DISTINCT priimek FROM profesor ORDER BY priimek")
+        return [row["priimek"] for row in self.cur.fetchall()]
+
+
 
 
     # zapri povezavo
