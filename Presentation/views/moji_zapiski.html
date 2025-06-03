@@ -1,0 +1,44 @@
+%rebase('osnova.html', naslov='Moji zapiski', stran='moji-zapiski')
+
+<div class="container">
+  <h2>Moji zapiski</h2>
+
+  %if zapiski:
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Naslov</th>
+          <th>Datum objave</th>
+          <th>Št. strani</th>
+          <th>Vrsta</th>
+          <th>Jezik</th>
+          <th>Predmet</th>
+          <th>Program</th>
+          <th>Fakulteta</th>
+          <th>Univerza</th>
+          <th>Profesorji</th>
+          <th>Datoteka</th>
+        </tr>
+      </thead>
+      <tbody>
+        %for z in zapiski:
+          <tr>
+            <td>{{z['naslov']}}</td>
+            <td>{{z['datum_objave']}}</td>
+            <td>{{z['stevilo_strani']}}</td>
+            <td>{{z['vrsta_dokumenta']}}</td>
+            <td>{{z['jezik']}}</td>
+            <td>{{z['ime_predmeta']}}</td>
+            <td>{{z['izobrazevalni_program']}}</td>
+            <td>{{z['ime_fakultete']}}</td>
+            <td>{{z['univerza']}}</td>
+            <td>{{z['profesorji']}}</td>
+            <td><a href="{{z['download_link']}}" target="_blank">Prenesi</a></td>
+          </tr>
+        %end
+      </tbody>
+    </table>
+  %else:
+    <p>Ni zapiskov za prikaz.</p>
+  %end
+</div>
