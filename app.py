@@ -65,42 +65,18 @@ if __name__ == "__main__":
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
 
 
+@get('/isci-zapiske')
+def isci_zapiske():
+    user_id = request.get_cookie("user_id", secret='skrivnost123')
+    if not user_id:
+        redirect('/prijava')
 
+    # Preberi parametre iz URL-ja
+    predmet = request.query.get('predmet')
+    naslov = request.query.get('naslov')
+    fakulteta = request.query.get('fakulteta')
+    vrsta = request.query.get('vrsta')
+    profesor = request.query.get('profesor')
 
-
-# from bottle import get, run, template, static_file, request
-# from Services.zapiski_service import ZapisekService
-# import os
-
-# # Inicializacija servisa
-# service = ZapisekService()
-
-# from bottle import TEMPLATE_PATH
-# TEMPLATE_PATH.insert(0, 'Presentation/views')
-
-# # Privzete nastavitve
-# SERVER_PORT = int(os.environ.get('BOTTLE_PORT', 8080))
-# RELOADER = os.environ.get('BOTTLE_RELOADER', True)
-
-# @get('/static/<filename:path>')
-# def static(filename):
-#     return static_file(filename, root='Presentation/static')
-
-# @get('/')
-# def index():
-#     """
-#     Domača stran z vsemi zapiski.
-#     """
-#     zapiski = service.pridobi_vse_zapiske()
-#     return template('zapiski.html', zapiski=zapiski)
-
-# @get('/moji-prenosi/<id_uporabnika:int>')
-# def moji_prenosi(id_uporabnika):
-#     """
-#     Prikaz zapiskov, ki si jih je prenesel določen uporabnik.
-#     """
-#     preneseni_zapiski = service.pridobi_prenesene_zapiske(id_uporabnika)
-#     return template('prenosi.html', prenosi=preneseni_zapiski)
-
-# if __name__ == "__main__":
-#     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
+    zapiski = service.filtriraj_zapiske(predmet, naslov, fakulteta, vrsta, profesor)
+    return template('isci_zapiske.html', zapiski=zapiski)

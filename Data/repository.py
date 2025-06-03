@@ -154,6 +154,32 @@ class Repo:
         return [dict(row) for row in self.cur.fetchall()]
 
 
+    #filtriranje zapiskov
+    def filtriraj_zapiske(self, predmet, naslov, fakulteta, vrsta, profesor):
+        query = "SELECT * FROM zapiski WHERE 1=1"
+        params = []
+
+        if predmet:
+            query += " AND predmet LIKE ?"
+            params.append(f"%{predmet}%")
+        if naslov:
+            query += " AND naslov LIKE ?"
+            params.append(f"%{naslov}%")
+        if fakulteta:
+            query += " AND fakulteta LIKE ?"
+            params.append(f"%{fakulteta}%")
+        if vrsta:
+            query += " AND vrsta LIKE ?"
+            params.append(f"%{vrsta}%")
+        if profesor:
+            query += " AND profesor LIKE ?"
+            params.append(f"%{profesor}%")
+
+        self.cur.execute(query, params)
+        return self.cur.fetchall()
+
+
+
     # Komentarji
 
     def dobi_komentarje(self, id_zapiska: int) -> List[Komentar]:
