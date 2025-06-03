@@ -27,9 +27,11 @@ class Repo:
             password=auth.password,
             port=DB_PORT
         )
+        self.conn.set_client_encoding('UTF8')
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-   
+
+
     # Uporabniki
 
     def dobi_uporabnika(self, id_uporabnika: int) -> Optional[UporabnikDto]:
