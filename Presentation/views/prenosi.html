@@ -1,27 +1,34 @@
-%rebase('osnova.html', naslov='Prenosi zapiskov', stran='prenosi')
+%rebase('osnova.html', naslov='Preneseni zapiski', stran='prenosi')
 
-<div>
-  <br>
-  <div style="display: flex;">
-    <div style="flex:1;">
-      <table class="table">
-        <thead>
+<div class="container">
+  <h2>Tvoji preneseni zapiski</h2>
+
+  %if prenosi:
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Naslov</th>
+          <th>Datum objave</th>
+          <th>Vrsta dokumenta</th>
+          <th>Predmet</th>
+          <th>Fakulteta</th>
+          <th>Avtor</th>
+        </tr>
+      </thead>
+      <tbody>
+        %for z in prenosi:
           <tr>
-            <th>ID zapiska</th>
-            <th>Uporabnik</th>
-            <th>Čas prenosa</th>
-          </tr>
-        </thead>
-        <tbody>
-        %for prenos in prenosi:
-          <tr>
-            <td>{{prenos.id_zapiska}}</td>
-            <td>{{prenos.uporabnik}}</td>
-            <td>{{prenos.cas_prenosa}}</td>
+            <td>{{z['naslov']}}</td>
+            <td>{{z['datum_objave']}}</td>
+            <td>{{z['vrsta_dokumenta']}}</td>
+            <td>{{z['ime_predmeta']}}</td>
+            <td>{{z['ime_fakultete']}}</td>
+            <td>{{z['avtor']}}</td>
           </tr>
         %end
-        </tbody>
-      </table>
-    </div>
-  </div>
+      </tbody>
+    </table>
+  %else:
+    <p>Ni še prenesenih zapiskov.</p>
+  %end
 </div>

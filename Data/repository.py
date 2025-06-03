@@ -245,11 +245,26 @@ class Repo:
         """, (p.id_uporabnika, p.id_zapiska))
         self.conn.commit()
 
-    def dobi_prenose_uporabnika(self, id_uporabnika: int) -> List[Prenos]:
+    def dobi_prenose_uporabnika(self, id_uporabnika: int) -> List[dict]:
         self.cur.execute("""
-            SELECT * FROM prenosi WHERE id_uporabnika = %s
+            SELECT
+                z.id_zapiska,
+                z.naslov,
+                z.datum_objave,
+                z.vrsta_dokumenta,
+                p.ime AS ime_predmeta,
+                f.ime AS ime_fakultete,
+                u.uporabnisko_ime AS avtor
+            FROM prenosi pr
+            JOIN zapisek z ON pr.id_zapiska = z.id_zapiska
+            JOIN uporabnik u ON z.id_uporabnika = u.id_uporabnika
+            JOIN predmet p ON z.id_predmeta = p.id_predmeta
+            JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
+            JOIN faks f ON pf.id_faksa = f.id_faksa
+            WHERE pr.id_uporabnika = %s
         """, (id_uporabnika,))
-        return [Prenos.from_dict(row) for row in self.cur.fetchall()]
+        return [dict(row) for row in self.cur.fetchall()]
+
 
     def izbrisi_prenose_zapiska(self, id_zapiska: int):
         self.cur.execute("DELETE FROM prenosi WHERE id_zapiska = %s", (id_zapiska,))

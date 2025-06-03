@@ -31,6 +31,9 @@ VALUES (1, 1);
 INSERT INTO profesor_predmet(id_profesorja, id_predmeta)
 VALUES (1, 1);
 
+INSERT INTO prenosi(id_uporabnika, id_zapiska)
+VALUES (1, 2);
+
 
 --vstavljanje vseh fakultet za univerzo v ljubljani
 INSERT INTO faks(ime, univerza) VALUES

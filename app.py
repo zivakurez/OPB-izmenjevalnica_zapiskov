@@ -29,6 +29,16 @@ def moji_prenosi(id_uporabnika):
     preneseni_zapiski = service.pridobi_prenesene_zapiske(id_uporabnika)
     return template('prenosi.html', prenosi=preneseni_zapiski)
 
+@get('/moji-prenosi')
+def moji_prenosi():
+    user_id = request.get_cookie("user_id", secret='skrivnost123')
+    if not user_id:
+        redirect('/prijava')
+
+    repo = Repo()
+    preneseni_zapiski = repo.dobi_prenose_uporabnika(int(user_id))
+    return template('prenosi.html', prenosi=preneseni_zapiski)
+
 @get('/')
 def zacetna_stran():
     return template('prijava.html', napaka=None)
