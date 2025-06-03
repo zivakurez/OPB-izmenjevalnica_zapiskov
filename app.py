@@ -68,12 +68,11 @@ def isci_zapiske():
         redirect('/prijava')
 
     predmet = request.query.get('predmet') or None
-    naslov = request.query.get('naslov') or None
     fakulteta = request.query.get('fakulteta') or None
-    vrsta = request.query.get('vrsta') or None
+    program = request.query.get('program') or None
     profesor = request.query.get('profesor') or None
 
-    zapiski = service.filtriraj_zapiske(predmet, naslov, fakulteta, vrsta, profesor)
+    zapiski = service.filtriraj_zapiske(predmet, fakulteta, program, profesor)
 
     return template('iskanje_zapiskov.html', zapiski=zapiski)
 
