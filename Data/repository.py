@@ -156,27 +156,49 @@ class Repo:
 
     #filtriranje zapiskov
     def filtriraj_zapiske(self, predmet, naslov, fakulteta, vrsta, profesor):
-        query = "SELECT * FROM zapiski WHERE 1=1"
+        query = """
+            SELECT z.naslov, z.id_zapiska, 
+                COALESCE(p.ime, 'Ni določeno') AS predmet, 
+                COALESCE(f.ime, 'Ni določeno') AS fakulteta,
+                COALESCE(z.vrsta_dokumenta, 'Ni določeno') AS vrsta,
+                COALESCE(pr.ime || ' ' || pr.priimek, 'Ni določeno') AS profesor
+            FROM zapisek z
+            LEFT JOIN predmet p ON z.id_predmeta = p.id_predmeta
+            LEFT JOIN predmet_faks pf ON pf.id_predmeta = p.id_predmeta
+            LEFT JOIN faks f ON pf.id_faksa = f.id_faksa
+            LEFT JOIN profesor_predmet pp ON p.id_predmeta = pp.id_predmeta
+            LEFT JOIN profesor pr ON pp.id_profesorja = pr.id_profesorja
+            WHERE 1=1
+        """
         params = []
 
         if predmet:
-            query += " AND predmet LIKE ?"
+            query += " AND LOWER(p.ime) LIKE LOWER(%s)"
             params.append(f"%{predmet}%")
         if naslov:
-            query += " AND naslov LIKE ?"
+            query += " AND LOWER(z.naslov) LIKE LOWER(%s)"
             params.append(f"%{naslov}%")
         if fakulteta:
-            query += " AND fakulteta LIKE ?"
+            query += " AND LOWER(f.ime) LIKE LOWER(%s)"
             params.append(f"%{fakulteta}%")
         if vrsta:
-            query += " AND vrsta LIKE ?"
+            query += " AND LOWER(z.vrsta_dokumenta) LIKE LOWER(%s)"
             params.append(f"%{vrsta}%")
         if profesor:
-            query += " AND profesor LIKE ?"
+            query += """
+                AND (
+                    LOWER(pr.ime) LIKE LOWER(%s) OR
+                    LOWER(pr.priimek) LIKE LOWER(%s)
+                )
+            """
+            params.append(f"%{profesor}%")
             params.append(f"%{profesor}%")
 
-        self.cur.execute(query, params)
-        return self.cur.fetchall()
+        query += " ORDER BY z.datum_objave DESC"
+
+        self.cur.execute(query, tuple(params))
+        return [dict(row) for row in self.cur.fetchall()]
+
 
 
 

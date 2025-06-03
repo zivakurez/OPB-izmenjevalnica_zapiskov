@@ -61,22 +61,25 @@ def profil():
 
     return template('profil.html', uporabnik=uporabnik, zapiski=zapiski, prenosi=prenosi)
 
-if __name__ == "__main__":
-    run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
-
-
 @get('/isci-zapiske')
 def isci_zapiske():
     user_id = request.get_cookie("user_id", secret='skrivnost123')
     if not user_id:
         redirect('/prijava')
 
-    # Preberi parametre iz URL-ja
-    predmet = request.query.get('predmet')
-    naslov = request.query.get('naslov')
-    fakulteta = request.query.get('fakulteta')
-    vrsta = request.query.get('vrsta')
-    profesor = request.query.get('profesor')
+    predmet = request.query.get('predmet') or None
+    naslov = request.query.get('naslov') or None
+    fakulteta = request.query.get('fakulteta') or None
+    vrsta = request.query.get('vrsta') or None
+    profesor = request.query.get('profesor') or None
 
     zapiski = service.filtriraj_zapiske(predmet, naslov, fakulteta, vrsta, profesor)
-    return template('isci_zapiske.html', zapiski=zapiski)
+
+    return template('iskanje_zapiskov.html', zapiski=zapiski)
+
+
+
+if __name__ == "__main__":
+    run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
+
+
