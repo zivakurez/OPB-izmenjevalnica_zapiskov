@@ -136,6 +136,7 @@ class ZapisekService:
     def pridobi_zapiske_s_podatki(self) -> List[dict]:
         return self.repo.dobi_zapiske_za_prikaz()
     
-    def filtriraj_zapiske(self, predmet, naslov, fakulteta, vrsta, profesor):
-        return self.repo.filtriraj_zapiske(predmet, naslov, fakulteta, vrsta, profesor)
+    def filtriraj_zapiske(self, predmet, fakulteta, program, profesor):
+        return self.repo.filtriraj_zapiske(predmet, fakulteta, program, profesor)
+
 
