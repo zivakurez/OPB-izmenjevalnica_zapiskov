@@ -154,40 +154,42 @@ class Repo:
         return [dict(row) for row in self.cur.fetchall()]
 
 
-    #filtriranje zapiskov
-    def filtriraj_zapiske(self, predmet, naslov, fakulteta, vrsta, profesor):
+    def filtriraj_zapiske(self, predmet, fakulteta, program, profesor):
         query = """
-            SELECT z.naslov, z.id_zapiska, 
+            SELECT 
+                z.naslov, 
+                z.id_zapiska, 
                 COALESCE(p.ime, 'Ni določeno') AS predmet, 
                 COALESCE(f.ime, 'Ni določeno') AS fakulteta,
-                COALESCE(z.vrsta_dokumenta, 'Ni določeno') AS vrsta,
+                COALESCE(p.izobrazevalni_program, 'Ni določeno') AS program,
                 COALESCE(pr.ime || ' ' || pr.priimek, 'Ni določeno') AS profesor
             FROM zapisek z
-            LEFT JOIN predmet p ON z.id_predmeta = p.id_predmeta
-            LEFT JOIN predmet_faks pf ON pf.id_predmeta = p.id_predmeta
+            JOIN predmet p ON z.id_predmeta = p.id_predmeta
+            LEFT JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
             LEFT JOIN faks f ON pf.id_faksa = f.id_faksa
             LEFT JOIN profesor_predmet pp ON p.id_predmeta = pp.id_predmeta
             LEFT JOIN profesor pr ON pp.id_profesorja = pr.id_profesorja
             WHERE 1=1
         """
+
         params = []
 
         if predmet:
             query += " AND LOWER(p.ime) LIKE LOWER(%s)"
             params.append(f"%{predmet}%")
-        if naslov:
-            query += " AND LOWER(z.naslov) LIKE LOWER(%s)"
-            params.append(f"%{naslov}%")
+
         if fakulteta:
             query += " AND LOWER(f.ime) LIKE LOWER(%s)"
             params.append(f"%{fakulteta}%")
-        if vrsta:
-            query += " AND LOWER(z.vrsta_dokumenta) LIKE LOWER(%s)"
-            params.append(f"%{vrsta}%")
+
+        if program:
+            query += " AND LOWER(p.izobrazevalni_program) LIKE LOWER(%s)"
+            params.append(f"%{program}%")
+
         if profesor:
             query += """
                 AND (
-                    LOWER(pr.ime) LIKE LOWER(%s) OR
+                    LOWER(pr.ime) LIKE LOWER(%s) OR 
                     LOWER(pr.priimek) LIKE LOWER(%s)
                 )
             """
@@ -198,9 +200,6 @@ class Repo:
 
         self.cur.execute(query, tuple(params))
         return [dict(row) for row in self.cur.fetchall()]
-
-
-
 
     # Komentarji
 
