@@ -163,7 +163,7 @@ class Repo:
                 z.id_zapiska, 
                 COALESCE(p.ime, 'Ni določeno') AS predmet, 
                 COALESCE(f.ime, 'Ni določeno') AS fakulteta,
-                COALESCE(p.izobrazevalni_program, 'Ni določeno') AS program,
+                COALESCE(p.izobrazevalni_program, 'Ni določeno') AS izobrazevalni_program,
                 COALESCE(pr.ime || ' ' || pr.priimek, 'Ni določeno') AS profesor
             FROM zapisek z
             JOIN predmet p ON z.id_predmeta = p.id_predmeta

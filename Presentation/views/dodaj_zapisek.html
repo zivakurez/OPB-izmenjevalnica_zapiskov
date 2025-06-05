@@ -4,7 +4,7 @@
   % if napaka:
     <p class="opozorilo">{{napaka}}</p>
   % end
-  <form method="POST" action="/dodaj-zapisek" class="filter-form">
+  <form method="POST" action="/dodaj-zapisek" class="filter-form" enctype="multipart/form-data">
     <label>Naslov:</label>
     <input type="text" name="naslov" required>
 
@@ -17,8 +17,8 @@
     <label>Jezik:</label>
     <input type="text" name="jezik" required>
 
-    <label>Download link (URL):</label>
-    <input type="url" name="download_link" required>
+    <label>Dodaj datoteko:</label>
+    <input type="file" name="datoteka" required>
 
     <label>Ime predmeta:</label>
     <input list="predmeti" name="predmet" required>

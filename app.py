@@ -140,7 +140,10 @@ def shrani_zapisek():
             jezik=request.forms.get('jezik'),
             download_link=request.forms.get('download_link')
         )
-
+        
+        fl = request.files.get("datoteka")
+        
+        fl.save(f"Data/zapiski/{fl.filename}")
         predmet = request.forms.get('predmet')
         faks = request.forms.get('faks')
         program = request.forms.get('program')

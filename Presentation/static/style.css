@@ -16,6 +16,21 @@ body {
   overflow-x: hidden; /* prepreči scroll v vsebini */
 }
 
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: space-between;
+}
+
+form label,
+form input,
+form select {
+  flex: 1 1 200px;
+  min-width: 150px;
+}
+
+
 h2 {
   text-align: center;
   margin-bottom: 20px;
