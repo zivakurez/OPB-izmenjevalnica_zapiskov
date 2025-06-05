@@ -59,6 +59,13 @@ def obdelaj_prijavo():
     else:
         return template('prijava.html', napaka="Napačno uporabniško ime ali geslo")
     
+
+@get('/odjava')
+def odjava():
+    response.delete_cookie("user_id")
+    redirect('/')
+
+
 @get('/profil')
 def profil():
     user_id = request.get_cookie("user_id", secret='skrivnost123')

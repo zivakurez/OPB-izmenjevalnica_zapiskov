@@ -3,16 +3,17 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f7f7f7;
   padding: 20px;
+  overflow-x: hidden; /* prepreči vodorinski scroll */
 }
 
 .container {
-  width: 100%;
+  max-width: 1200px; /* ali 100% */
   margin: auto;
   background-color: white;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  overflow-x: auto; /* omogoči scroll če tabela preseže širino */
+  overflow-x: hidden; /* prepreči scroll v vsebini */
 }
 
 h2 {
@@ -54,10 +55,11 @@ table.table thead th {
 }
 
 table {
-  min-width: 1000px; /* ali več, če imaš veliko stolpcev */
+  width: 100%;
+  max-width: 100%;
+  table-layout: auto;
+  box-sizing: border-box;
 }
-
-
 
 
 form.login-form {
