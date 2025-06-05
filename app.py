@@ -109,7 +109,7 @@ def prikazi_dodaj_zapisek():
     programi = service.repo.vrni_vse_programe()
     fakultete = service.repo.vrni_vse_fakultete()
     imena_profesorjev = service.repo.vrni_vsa_imena_profesorjev()
-    priimki_profesorjev = service.repo.vse_priimke_profesorjev()
+    priimki_profesorjev = service.repo.vrni_vse_priimke_profesorjev()
 
     return template('dodaj_zapisek.html',
                     predmeti=predmeti,
