@@ -28,7 +28,7 @@ class Repo:
             port=DB_PORT
         )
         self.conn.set_client_encoding('UTF8')
-        self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
 
 
@@ -203,13 +203,57 @@ class Repo:
         self.cur.execute(query, tuple(params))
         return [dict(row) for row in self.cur.fetchall()]
 
+    def dobi_zapisek_s_podatki(self, id_zapiska: int) -> Optional[dict]:
+        self.cur.execute("""
+            SELECT 
+                z.id_zapiska,
+                z.naslov,
+                z.datum_objave,
+                z.stevilo_strani,
+                z.vrsta_dokumenta,
+                z.jezik,
+                z.download_link,
+
+                u.uporabnisko_ime AS ime_uporabnika,
+                p.ime AS ime_predmeta,
+                p.izobrazevalni_program,
+                f.ime AS ime_fakultete,
+                f.univerza,
+                string_agg(DISTINCT pr.ime || ' ' || pr.priimek, ', ') AS profesorji
+
+            FROM zapisek z
+            JOIN uporabnik u ON z.id_uporabnika = u.id_uporabnika
+            JOIN predmet p ON z.id_predmeta = p.id_predmeta
+            JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
+            JOIN faks f ON pf.id_faksa = f.id_faksa
+            LEFT JOIN profesor_predmet pp ON p.id_predmeta = pp.id_predmeta
+            LEFT JOIN profesor pr ON pp.id_profesorja = pr.id_profesorja
+
+            WHERE z.id_zapiska = %s
+            GROUP BY z.id_zapiska, u.uporabnisko_ime, p.ime, p.izobrazevalni_program, f.ime, f.univerza
+        """, (id_zapiska,))
+        
+        row = self.cur.fetchone()
+        if row:
+            return dict(row)
+        return None
+
     # Komentarji
 
-    def dobi_komentarje(self, id_zapiska: int) -> List[Komentar]:
+    def dobi_komentarje(self, id_zapiska: int) -> List[dict]:
         self.cur.execute("""
-            SELECT * FROM komentar WHERE id_zapiska = %s
+            SELECT 
+                k.id_komentarja,
+                k.vsebina AS besedilo,
+                k.id_uporabnika,
+                u.uporabnisko_ime AS avtor
+            FROM komentar k
+            JOIN uporabnik u ON k.id_uporabnika = u.id_uporabnika
+            WHERE k.id_zapiska = %s
+            ORDER BY k.id_komentarja ASC
         """, (id_zapiska,))
-        return [Komentar.from_dict(row) for row in self.cur.fetchall()]
+        return [dict(row) for row in self.cur.fetchall()]
+
 
     def dodaj_komentar(self, k: Komentar):
         self.cur.execute("""
@@ -236,7 +280,18 @@ class Repo:
         
         self.conn.commit()
 
-
+    def dobi_komentar(self, id_komentarja: int) -> Optional[Komentar]:
+        self.cur.execute("""
+            SELECT * FROM komentar WHERE id_komentarja = %s
+        """, (id_komentarja,))
+        row = self.cur.fetchone()
+        return Komentar.from_dict(row) if row else None
+    
+    def izbrisi_komentar(self, id_komentarja: int):
+        self.cur.execute("""
+            DELETE FROM komentar WHERE id_komentarja = %s
+        """, (id_komentarja,))
+        self.conn.commit()
 
     # Prenosi
 
@@ -371,6 +426,13 @@ class Repo:
         return [row["priimek"] for row in self.cur.fetchall()]
 
 
+    #preveri če je admin
+    def je_admin(self, id_uporabnika: int) -> bool:
+        self.cur.execute("""
+            SELECT vloga FROM uporabnik WHERE id_uporabnika = %s
+        """, (id_uporabnika,))
+        row = self.cur.fetchone()
+        return row and row['vloga'] == 'admin'
 
 
     # zapri povezavo

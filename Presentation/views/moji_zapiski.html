@@ -23,7 +23,7 @@
       <tbody>
         %for z in zapiski:
           <tr>
-            <td>{{z['naslov']}}</td>
+            <td><a href="/zapisek/{{z['id_zapiska']}}">{{z['naslov']}}</a></td>
             <td>{{z['datum_objave']}}</td>
             <td>{{z['stevilo_strani']}}</td>
             <td>{{z['vrsta_dokumenta']}}</td>

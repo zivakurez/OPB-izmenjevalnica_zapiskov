@@ -18,7 +18,7 @@
       <tbody>
         %for z in prenosi:
           <tr>
-            <td>{{z['naslov']}}</td>
+            <td><a href="/zapisek/{{z['id_zapiska']}}">{{z['naslov']}}</a></td>
             <td>{{z['datum_objave']}}</td>
             <td>{{z['vrsta_dokumenta']}}</td>
             <td>{{z['ime_predmeta']}}</td>

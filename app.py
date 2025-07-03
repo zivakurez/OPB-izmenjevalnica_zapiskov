@@ -1,12 +1,15 @@
 from Presentation.bottleext import get, post, run, request, template, redirect, static_file, url, response, template_user
 
 from Services.zapiski_service import ZapisekService
+from Services.komentar_service import KomentarService
 import os
 from bottle import post, request, response, redirect
 from Data.repository import Repo
-from Data.models import Zapisek
+from Data.models import Zapisek, Komentar
 
 service = ZapisekService()
+komentar_service = KomentarService()
+
 
 SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
@@ -169,8 +172,61 @@ def shrani_zapisek():
             return template('dodaj_zapisek.html', napaka="Napaka pri dodajanju zapiska.")
     except Exception as e:
         return template('dodaj_zapisek.html', napaka=f"Napaka: {str(e)}")
+    
+@get('/zapisek/<id_zapiska:int>')
+def prikazi_zapisek(id_zapiska):
+    user_id = request.get_cookie("user_id", secret='skrivnost123')
+    uporabnik = service.repo.dobi_uporabnika(user_id) if user_id else None
+
+    zapisek = service.repo.dobi_zapisek_s_podatki(id_zapiska)
+    komentarji = service.repo.dobi_komentarje(id_zapiska)
+
+    return template('zapisek.html',
+                    zapisek=zapisek,
+                    komentarji=komentarji,
+                    uporabnik=uporabnik,
+                    napaka=None)
+
+@post('/dodaj-komentar/<id_zapiska:int>')
+def dodaj_komentar(id_zapiska):
+    uporabnik = request.get_cookie("user_id", secret='skrivnost123')
+    if not uporabnik:
+        redirect('/prijava')
+
+    besedilo = request.forms.get('besedilo')
+
+    komentar_service.dodaj_komentar(besedilo, id_zapiska, uporabnik)
+
+    redirect(f'/zapisek/{id_zapiska}')
 
 
+@post('/izbrisi-komentar/<id_komentarja:int>')
+def izbrisi_komentar(id_komentarja):
+    user_id = request.get_cookie("user_id", secret='skrivnost123')
+    if not user_id:
+        redirect('/prijava')
+
+    komentar = service.repo.dobi_komentar(id_komentarja)
+    if komentar and (komentar.id_uporabnika == int(user_id) or service.repo.je_admin(user_id)):
+        service.repo.izbrisi_komentar(id_komentarja)
+
+    redirect(f"/zapisek/{komentar.id_zapiska}")
+
+@post('/izbrisi-zapisek/<id_zapiska:int>')
+def izbrisi_zapisek(id_zapiska):
+    user_id = request.get_cookie("user_id", secret='skrivnost123')
+    if not user_id:
+        redirect('/prijava')
+
+    zapisek = service.repo.dobi_zapisek_po_id(id_zapiska)
+    if not zapisek:
+        return "Zapisek ne obstaja."
+
+    if zapisek.id_uporabnika != int(user_id) and not service.repo.je_admin(user_id):
+        return "Nimate dovoljenja za izbris tega zapiska."
+
+    service.repo.izbrisi_zapisek(id_zapiska)
+    redirect('/moji-zapiski')
 
 if __name__ == "__main__":
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)

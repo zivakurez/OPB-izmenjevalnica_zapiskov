@@ -49,7 +49,7 @@
                 <ul class="notes-list">
                 % for zapis in zapiski:
                     <li class="note-item">
-                        <h3>{{zapis['naslov']}}</h3>
+                        <td><a href="/zapisek/{{zapis['id_zapiska']}}">{{zapis['naslov']}}</a></td>
                         <p><strong>Predmet:</strong> {{zapis['predmet']}}</p>
                         <p><strong>Fakulteta:</strong> {{zapis['fakulteta']}}</p>
                         <p><strong>Program:</strong> {{zapis['izobrazevalni_program']}}</p>
