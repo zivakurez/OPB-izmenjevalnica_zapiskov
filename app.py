@@ -1,7 +1,8 @@
-from Presentation.bottleext import get, post, run, request, template, redirect, static_file, url, response, template_user
+from Presentation.bottleext import get, post, run, request, template, redirect, static_file, url, response, template_user, route
 
 from Services.zapiski_service import ZapisekService
 from Services.komentar_service import KomentarService
+from Services.auth_service import AuthService
 import os
 from bottle import post, request, response, redirect
 from Data.repository import Repo
@@ -9,7 +10,7 @@ from Data.models import Zapisek, Komentar
 
 service = ZapisekService()
 komentar_service = KomentarService()
-
+auth = AuthService()
 
 SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
@@ -47,20 +48,24 @@ def moji_prenosi():
 def zacetna_stran():
     return template('prijava.html', napaka=None)
 
+@get("/prijava")
+def prijava_get():
+    return template("prijava.html", napaka=None)
+
 
 @post('/prijava')
 def obdelaj_prijavo():
     uporabnisko_ime = request.forms.get('uporabnisko_ime')
     geslo = request.forms.get('geslo')
 
-    repo = Repo()
-    uporabnik = repo.preveri_prijavo(uporabnisko_ime, geslo)
+    uporabnik = auth.prijavi_uporabnika(uporabnisko_ime, geslo)  # <-- uporabi auth_service
 
     if uporabnik:
         response.set_cookie("user_id", str(uporabnik.id_uporabnika), secret='skrivnost123')
         redirect('/profil')
     else:
         return template('prijava.html', napaka="Napačno uporabniško ime ali geslo")
+
     
 
 @get('/odjava')
@@ -227,6 +232,34 @@ def izbrisi_zapisek(id_zapiska):
 
     service.repo.izbrisi_zapisek(id_zapiska)
     redirect('/moji-zapiski')
+
+  
+@get("/registracija")
+def registracija_get():
+    fakultete = service.repo.dobi_fakultete()  
+    return template("registracija", fakultete=fakultete)
+
+@post("/registracija")
+def registracija_post():
+    uporabnisko_ime = request.forms.get("uporabnisko_ime")
+    geslo1 = request.forms.get("geslo1")
+    geslo2 = request.forms.get("geslo2")
+    ime_faksa = request.forms.get("faks")
+
+    if geslo1 != geslo2:
+        return "Gesli se ne ujemata."
+
+    if auth.obstaja_uporabnik(uporabnisko_ime):
+        return "Uporabniško ime je že zasedeno."
+
+    id_faksa = service.repo.dobi_id_faksa_po_imenu(ime_faksa)
+    if id_faksa is None:
+        return "Izbran faks ne obstaja."
+
+    auth.dodaj_uporabnika(uporabnisko_ime, "user", geslo1, id_faksa)
+    redirect("/prijava")
+
+
 
 if __name__ == "__main__":
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
