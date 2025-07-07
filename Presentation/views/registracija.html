@@ -1,0 +1,26 @@
+% rebase('osnova.html', naslov='Registracija', stran='registracija')
+
+<div class="container">
+  <h2>Registracija</h2>
+  <form action="/registracija" method="post">
+    <label>Uporabniško ime:</label>
+    <input type="text" name="uporabnisko_ime" required><br>
+
+    <label>Geslo:</label>
+    <input type="password" name="geslo1" required><br>
+
+    <label>Ponovi geslo:</label>
+    <input type="password" name="geslo2" required><br>
+
+    <label>Fakulteta:</label>
+    <input list="fakultete" name="faks" required>
+    <datalist id="fakultete">
+        % for ime in fakultete:
+            <option value="{{ime}}">
+        % end
+    </datalist><br>
+
+    <input type="submit" value="Registriraj se">
+</form>
+
+</div>

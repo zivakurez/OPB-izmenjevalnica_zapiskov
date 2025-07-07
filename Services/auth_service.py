@@ -19,7 +19,6 @@ class AuthService:
 
         #pripravimo objekt
         uporabnik = Uporabnik(
-            id_uporabnika=0, 
             role=role,
             uporabnisko_ime=uporabnisko_ime,
             geslo=password_hash.decode('utf-8'),
@@ -37,11 +36,11 @@ class AuthService:
         )
 
     def obstaja_uporabnik(self, uporabnisko_ime: str) -> bool:
-        user = self.repo.dobi_uporabnika_po_uporabniskem_imenu(uporabnisko_ime)
+        user = self.repo.dobi_uporabnika_po_imenu(uporabnisko_ime)
         return user is not None
 
     def prijavi_uporabnika(self, uporabnisko_ime: str, geslo: str) -> Optional[UporabnikDto]:
-        user = self.repo.dobi_uporabnika_po_uporabniskem_imenu(uporabnisko_ime)
+        user = self.repo.dobi_uporabnika_po_imenu(uporabnisko_ime)
         if user is None:
             return None
 

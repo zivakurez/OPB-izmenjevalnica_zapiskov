@@ -42,19 +42,34 @@ class Repo:
         """, (id_uporabnika,))
         row = self.cur.fetchone()
         return UporabnikDto.from_dict(row) if row else None
+    
+    def dobi_uporabnika_po_imenu(self, uporabnisko_ime: str) -> Optional[Uporabnik]:
+        self.cur.execute("""
+            SELECT id_uporabnika, role, uporabnisko_ime, geslo, id_faksa
+            FROM uporabnik
+            WHERE uporabnisko_ime = %s
+        """, (uporabnisko_ime,))
+        row = self.cur.fetchone()
+        if row:
+            return Uporabnik(**row)  
+        return None
+
 
     def dodaj_uporabnika(self, uporabnik: Uporabnik):
         self.cur.execute("""
-            INSERT INTO uporabnik (id_uporabnika, role, uporabnisko_ime, geslo, id_faksa)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO uporabnik (role, uporabnisko_ime, geslo, id_faksa)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id_uporabnika
         """, (
-            uporabnik.id_uporabnika,
             uporabnik.role,
             uporabnik.uporabnisko_ime,
             uporabnik.geslo,
             uporabnik.id_faksa
         ))
+        uporabnik.id_uporabnika = self.cur.fetchone()["id_uporabnika"]
         self.conn.commit()
+
+
 
 
     # Zapiski
@@ -334,6 +349,18 @@ class Repo:
         self.cur.execute("SELECT * FROM faks WHERE ime = %s", (ime,))
         row = self.cur.fetchone()
         return Faks.from_dict(row) if row else None
+    
+    def dobi_id_faksa_po_imenu(self, ime_faksa: str) -> Optional[int]:
+        self.cur.execute("SELECT id_faksa FROM faks WHERE ime = %s", (ime_faksa,))
+        row = self.cur.fetchone()
+        return row["id_faksa"] if row else None
+    
+    def dobi_fakultete(self) -> list[str]:
+        self.cur.execute("""
+            SELECT ime FROM faks
+        """)
+        return [row["ime"] for row in self.cur.fetchall()]
+
 
     def dobi_profesor_po_imenu(self, ime: str, priimek: str) -> Optional[Profesor]:
         self.cur.execute("SELECT * FROM profesor WHERE ime = %s AND priimek = %s", (ime, priimek))
