@@ -12,7 +12,7 @@
   <p><strong>Avtor:</strong> {{ zapisek['ime_uporabnika'] }}</p>
   <p><a href="{{ zapisek['download_link'] }}" class="btn btn-primary">Prenesi zapisek</a></p>
 
-  % if uporabnik and (uporabnik.uporabnisko_ime == zapisek['ime_uporabnika'] or uporabnik.vloga == 'admin'):
+  % if uporabnik and (uporabnik.uporabnisko_ime == zapisek['ime_uporabnika'] or uporabnik.role == 'admin'):
     <form action="/izbrisi-zapisek/{{ zapisek['id_zapiska'] }}" method="post" onsubmit="return confirm('Res želite izbrisati ta zapisek?');">
       <button class="btn btn-primary" type="submit">Izbriši zapisek</button>
     </form>
@@ -23,7 +23,7 @@
   % for komentar in komentarji:
     <div class="komentar">
       <p><strong>{{ komentar['avtor'] }}</strong>: {{ komentar['besedilo'] }}</p>
-      % if uporabnik and (uporabnik.id_uporabnika == komentar['id_uporabnika'] or uporabnik.vloga == 'admin'):
+      % if uporabnik and (uporabnik.id_uporabnika == komentar['id_uporabnika'] or uporabnik.role == 'admin'):
         <form action="/izbrisi-komentar/{{ komentar['id_komentarja'] }}" method="post">
           <button class="btn btn-primary" type="submit">Izbriši</button>
         </form>
