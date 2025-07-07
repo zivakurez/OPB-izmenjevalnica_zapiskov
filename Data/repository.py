@@ -456,10 +456,10 @@ class Repo:
     #preveri če je admin
     def je_admin(self, id_uporabnika: int) -> bool:
         self.cur.execute("""
-            SELECT vloga FROM uporabnik WHERE id_uporabnika = %s
+            SELECT role FROM uporabnik WHERE id_uporabnika = %s
         """, (id_uporabnika,))
         row = self.cur.fetchone()
-        return row and row['vloga'] == 'admin'
+        return row and row['role'] == 'admin'
 
 
     # zapri povezavo
