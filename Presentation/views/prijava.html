@@ -1,28 +1,3 @@
-<!-- %rebase('osnova.html', naslov='Prijava', stran='prijava')
-
-<div class="container">
-  <h2>Prijava</h2>
-
-  <form action="{{url('/prijava')}}" method="POST" class="login-form">
-    <div class="form-group">
-      <label for="username">Uporabniško ime</label>
-      <input type="text" id="username" name="uporabnisko_ime" class="form-control" placeholder="Vnesi uporabniško ime" required>
-    </div>
-
-    <div class="form-group">
-      <label for="password">Geslo</label>
-      <input type="password" id="password" name="geslo" class="form-control" placeholder="Geslo" required>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Prijava</button>
-
-    %if napaka:
-      <p class="opozorilo">{{napaka}}</p>
-    %end
-  </form>
-</div> -->
-
-
 %rebase('osnova.html', naslov='Prijava', stran='prijava')
 
 <div class="container">
@@ -40,12 +15,18 @@
       <label for="password">Geslo</label>
       <input type="password" id="password" name="geslo" class="form-control" placeholder="Geslo" required>
     </div>
+    
+    <div class="gumbi">
+      <button type="submit" class="btn btn-primary">Prijava</button>
+      %if napaka:
+        <p class="opozorilo">{{napaka}}</p>
+      %end
+    </div>
 
-    <button type="submit" class="btn btn-primary">Prijava</button>
-
-    %if napaka:
-      <p class="opozorilo">{{napaka}}</p>
-    %end
-    <p>Še nimaš računa? <a href="/registracija">Ustvari nov uporabniški račun</a></p>
+  <div class="nov-uporabnik">
+    <p class="opis">Še nimaš računa?</p>
+    <a href="/registracija" class="btn btn-primary">Ustvari nov uporabniški račun</a>
+  </div>
+    
   </form>
 </div>

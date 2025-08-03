@@ -16,7 +16,7 @@ body {
   overflow-x: hidden; /* prepreči scroll v vsebini */
 }
 
-form {
+form:not(.login-form) {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
@@ -48,12 +48,6 @@ table.table th, table.table td {
   text-align: left;
 }
 
-/* To lahko zakomentiraš, ker boš spodaj uporabil pastelno roza
-table.table th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-} */
-
 table.table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
@@ -62,7 +56,7 @@ table.table tr:hover {
   background-color: #f1f1f1;
 }
 
-/* Končno pravilo za pastelno roza glavo */
+/* pastelno roza glava */
 table.table thead th {
   background-color: #f8c8dc;
   font-weight: bold;
@@ -84,6 +78,17 @@ form.login-form {
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.gumbi {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .form-group {
@@ -104,6 +109,7 @@ form.login-form {
   font-size: 14px;
 }
 
+/* Prijavni gumb */
 .btn.btn-primary {
   background-color: #f8c8dc;
   color: black;
@@ -112,10 +118,40 @@ form.login-form {
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  width: 100%;
+  max-width: 200px;
+  text-align: center;
 }
 
 .btn.btn-primary:hover {
   background-color: #f4b0cd;
+}
+
+/* Okvir za registracijo */
+.nov-uporabnik {
+  margin-top: 25px;
+  padding: 20px;
+  background-color: #ffe6f0;
+  border-radius: 10px;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Gumb za registracijo */
+.btn.btn-secondary {
+  background-color: #f6d2e7;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 10px;
 }
 
 .opozorilo {
@@ -124,7 +160,6 @@ form.login-form {
   font-weight: bold;
   text-align: center;
 }
-
 
 .glavni-naslov {
   text-align: center;
@@ -139,3 +174,45 @@ form.login-form {
   margin-bottom: 30px;
   color: #555;
 }
+
+/* .btn.btn-secondary {
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.btn.btn-secondary:hover {
+  background-color: #d5d5d5;
+}
+
+.nov-uporabnik {
+  text-align: center;
+  margin-top: 20px;
+} */
+
+/* .nov-uporabnik {
+  margin-top: 25px;
+  padding: 20px;
+  background-color: #ffe6f0;
+  border-radius: 10px;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nov-uporabnik p {
+  margin: 0 0 10px 0;
+}
+
+.nov-uporabnik {
+  border: 3px solid red !important;
+} */

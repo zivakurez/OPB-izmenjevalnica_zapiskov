@@ -99,7 +99,7 @@ def isci_zapiske():
     profesor = request.query.get('profesor') or None
 
     zapiski = service.filtriraj_zapiske(predmet, fakulteta, program, profesor)
-
+    
     return template('iskanje_zapiskov.html', zapiski=zapiski)
 
 
