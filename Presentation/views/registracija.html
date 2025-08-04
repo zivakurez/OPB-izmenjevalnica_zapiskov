@@ -2,25 +2,36 @@
 
 <div class="container">
   <h2>Registracija</h2>
-  <form action="/registracija" method="post">
-    <label>Uporabniško ime:</label>
-    <input type="text" name="uporabnisko_ime" required><br>
+  <form action="/registracija" method="post" clas="login-from">
 
-    <label>Geslo:</label>
-    <input type="password" name="geslo1" required><br>
+    <div class="form-group">
+        <label>Uporabniško ime:</label>
+        <input type="text" name="uporabnisko_ime" class="form-control" required>
+    </div>
 
+    <div class="form-group">
+        <label>Geslo:</label>
+        <input type="password" name="geslo1" class="form-control" required>
+    </div>
+    
+    <div class="form-group">
     <label>Ponovi geslo:</label>
-    <input type="password" name="geslo2" required><br>
+    <input type="password" name="geslo2" class="form-control" required>
+    </div>
 
-    <label>Fakulteta:</label>
-    <input list="fakultete" name="faks" required>
-    <datalist id="fakultete">
-        % for ime in fakultete:
-            <option value="{{ime}}">
-        % end
-    </datalist><br>
+    <div class="form-group">
+        <label>Fakulteta:</label>
+        <input list="fakultete" name="faks" class="form-control" required>
+        <datalist id="fakultete">
+            % for ime in fakultete:
+                <option value="{{ime}}">
+            % end
+        </datalist>
+    </div>
 
-    <input type="submit" value="Registriraj se">
-</form>
+    <div class="gumbi">
+        <input type="submit" value="Registriraj se" class="btn btn-primary">
+    </div>
 
+  </form>
 </div>

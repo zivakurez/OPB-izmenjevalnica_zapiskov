@@ -9,18 +9,22 @@ body {
 .container {
   max-width: 600px;
   margin: 40px auto;
-  background-color: #ffffff;
+  background-color: #757575;
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   overflow-x: hidden;
+  align-items: center;
+  display: flex;
 }
+
+
 
 .opis {
   text-align: center;
   font-size: 1.2rem;
   margin-bottom: 30px;
-  color: #555;
+  color: #28222f;
 }
 
 h2 {
@@ -29,7 +33,7 @@ h2 {
 }
 
 form.login-form {
-  max-width: 400px;
+  max-width: 600px;
   margin: auto;
   background-color: #fff;
   padding: 30px;
@@ -60,10 +64,12 @@ form.login-form {
 
 .gumbi {
   width: 100%;
+  align-items: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  text-align: center;
 }
+  
 
 .btn.btn-primary {
   background-color: #f8c8dc;
@@ -115,7 +121,7 @@ form.login-form {
 
 
 
-/*form:not(.login-form) {
+form:not(.login-form) {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
@@ -153,7 +159,7 @@ table.table tr:hover {
 }
 
 /* pastelno roza glava */
-/*table.table thead th {
+table.table thead th {
   background-color: #f8c8dc;
   font-weight: bold;
   color: #333;
@@ -169,24 +175,6 @@ table {
 
 
 
-
-
-/* Gumb za registracijo */
-/*.btn.btn-secondary {
-  background-color: #f6d2e7;
-  color: black;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  text-decoration: none;
-  display: inline-block;
-  margin-top: 10px;
-}
-
-
-
 .glavni-naslov {
   text-align: center;
   font-size: 2.5rem;
@@ -195,37 +183,29 @@ table {
 }
 
 
-
-/* za navigation bar */
-/*nav {
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  padding: 10px 15px;
-}
-
-/*nav ul {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-/*nav ul li a {
-  display: inline-block;
-  padding: 8px 12px;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  text-decoration: none;
+.zapisek-info p {
+  margin-bottom: 10px;
+  font-size: 1rem;
   color: #333;
-  font-weight: 500;
-  transition: background-color 0.2s, border-color 0.2s;
 }
 
-/*nav ul li a:hover {
-  background-color: #e0e0e0;
-  border-color: #bbb;
-} 
+.komentar {
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+
+.komentar p {
+  margin: 0;
+}
+
+textarea.form-control {
+  resize: vertical;
+}
+
+hr {
+  margin: 30px 0;
+}
 

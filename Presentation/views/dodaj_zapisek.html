@@ -1,4 +1,16 @@
 %rebase('osnova.html', naslov='Dodaj zapisek', stran='dodaj-zapisek')
+
+  <nav style="margin-bottom: 20px;">
+    <ul style="display: flex; list-style: none; padding: 0; gap: 15px; flex-wrap: wrap;">
+      <li><a href="{{url('/moji-zapiski')}}" class="btn btn-primary">Moji zapiski</a></li>
+      <li><a href="{{url('/moji-prenosi')}}" class="btn btn-primary">Preneseni zapiski</a></li>
+      <li><a href="/isci-zapiske" class="btn btn-primary">Iskanje zapiskov</a></li>
+      <li><a href="/dodaj-zapisek" class="btn btn-primary">Dodaj zapisek</a></li>
+      <li><a href="/odjava" class="btn btn-primary">Odjava</a></li>
+    </ul>
+  </nav>
+
+
 <main class="container">
   <h2>Dodaj zapisek</h2>
   % if napaka:
@@ -65,4 +77,102 @@
 
     <button type="submit" class="btn btn-primary">Dodaj zapisek</button>
   </form>
-</main>
+</main> 
+
+
+<!-- %rebase('osnova.html', naslov='Dodaj zapisek', stran='dodaj-zapisek')
+
+<main class="container">
+  <h2 class="glavni-naslov">Dodaj zapisek</h2>
+
+  % if napaka:
+    <p class="opozorilo">{{napaka}}</p>
+  % end
+
+  <form method="POST" action="/dodaj-zapisek" enctype="multipart/form-data" class="login-form">
+
+    <div class="form-group">
+      <label for="naslov">Naslov:</label>
+      <input type="text" id="naslov" name="naslov" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="stevilo_strani">Število strani:</label>
+      <input type="number" id="stevilo_strani" name="stevilo_strani" min="1" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="vrsta_dokumenta">Vrsta dokumenta:</label>
+      <input type="text" id="vrsta_dokumenta" name="vrsta_dokumenta" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="jezik">Jezik:</label>
+      <input type="text" id="jezik" name="jezik" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="datoteka">Dodaj datoteko:</label>
+      <input type="file" id="datoteka" name="datoteka" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="predmet">Ime predmeta:</label>
+      <input list="predmeti" id="predmet" name="predmet" class="form-control" required>
+      <datalist id="predmeti">
+        % for ime in predmeti:
+          <option value="{{ime}}">
+        % end
+      </datalist>
+    </div>
+
+    <div class="form-group">
+      <label for="program">Izobraževalni program:</label>
+      <input list="programi" id="program" name="program" class="form-control" required>
+      <datalist id="programi">
+        % for ime in programi:
+          <option value="{{ime}}">
+        % end
+      </datalist>
+    </div>
+
+    <div class="form-group">
+      <label for="letnik">Letnik:</label>
+      <input type="number" id="letnik" name="letnik" min="1" max="6" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="faks">Fakulteta:</label>
+      <input list="fakultete" id="faks" name="faks" class="form-control" required>
+      <datalist id="fakultete">
+        % for ime in fakultete:
+          <option value="{{ime}}">
+        % end
+      </datalist>
+    </div>
+
+    <div class="form-group">
+      <label for="ime_profesorja">Ime profesorja:</label>
+      <input list="imena_prof" id="ime_profesorja" name="ime_profesorja" class="form-control" required>
+      <datalist id="imena_prof">
+        % for ime in imena_profesorjev:
+          <option value="{{ime}}">
+        % end
+      </datalist>
+    </div>
+
+    <div class="form-group">
+      <label for="priimek_profesorja">Priimek profesorja:</label>
+      <input list="priimki_prof" id="priimek_profesorja" name="priimek_profesorja" class="form-control" required>
+      <datalist id="priimki_prof">
+        % for priimek in priimki_profesorjev:
+          <option value="{{priimek}}">
+        % end
+      </datalist>
+    </div>
+
+    <div class="gumbi">
+      <button type="submit" class="btn btn-primary">Dodaj zapisek</button>
+    </div>
+  </form>
+</main> -->

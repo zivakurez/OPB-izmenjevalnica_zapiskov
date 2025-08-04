@@ -1,4 +1,4 @@
-% rebase('osnova.html', naslov=zapisek['naslov'], stran='zapisek')
+<!-- % rebase('osnova.html', naslov=zapisek['naslov'], stran='zapisek')
 
 <div class="container">
   <h2>{{ zapisek['naslov'] }}</h2>
@@ -34,5 +34,59 @@
   <form action="/dodaj-komentar/{{ zapisek['id_zapiska'] }}" method="post">
     <textarea name="besedilo" rows="3" placeholder="Dodaj komentar..." required></textarea><br>
     <button class="btn btn-primary" type="submit">Objavi</button>
+  </form>
+</div> -->
+
+
+
+% rebase('osnova.html', naslov=zapisek['naslov'], stran='zapisek')
+
+<div class="container">
+  <h2 class="glavni-naslov">{{ zapisek['naslov'] }}</h2>
+
+  <div class="zapisek-info">
+    <p><strong>Predmet:</strong> {{ zapisek['ime_predmeta'] }}</p>
+    <p><strong>Program:</strong> {{ zapisek['izobrazevalni_program'] }}</p>
+    <p><strong>Fakulteta:</strong> {{ zapisek['ime_fakultete'] }} ({{ zapisek['univerza'] }})</p>
+    <p><strong>Profesorji:</strong> {{ zapisek['profesorji'] }}</p>
+    <p><strong>Jezik:</strong> {{ zapisek['jezik'] }}</p>
+    <p><strong>Vrsta dokumenta:</strong> {{ zapisek['vrsta_dokumenta'] }}</p>
+    <p><strong>Število strani:</strong> {{ zapisek['stevilo_strani'] }}</p>
+    <p><strong>Avtor:</strong> {{ zapisek['ime_uporabnika'] }}</p>
+  </div>
+
+  <div class="gumbi">
+    <a href="{{ zapisek['download_link'] }}" class="btn btn-primary">Prenesi zapisek</a><br>
+    
+    % if uporabnik and (uporabnik.uporabnisko_ime == zapisek['ime_uporabnika'] or uporabnik.role == 'admin'):
+      <form action="/izbrisi-zapisek/{{ zapisek['id_zapiska'] }}" method="post" onsubmit="return confirm('Res želite izbrisati ta zapisek?');">
+        <button class="btn btn-primary" type="submit">Izbriši zapisek</button>
+      </form>
+    % end
+  </div>
+
+  <hr>
+
+  <h2>Komentarji</h2>
+
+  % for komentar in komentarji:
+    <div class="komentar">
+      <p><strong>{{ komentar['avtor'] }}</strong>: {{ komentar['besedilo'] }}</p>
+      % if uporabnik and (uporabnik.id_uporabnika == komentar['id_uporabnika'] or uporabnik.role == 'admin'):
+        <form action="/izbrisi-komentar/{{ komentar['id_komentarja'] }}" method="post">
+          <button class="btn btn-secondary" type="submit">Izbriši</button>
+        </form>
+      % end
+    </div>
+  % end
+
+  <form action="/dodaj-komentar/{{ zapisek['id_zapiska'] }}" method="post" class="login-form">
+    <div class="form-group">
+      <label for="besedilo">Dodaj komentar:</label>
+      <textarea id="besedilo" name="besedilo" rows="3" class="form-control" placeholder="Dodaj komentar..." required></textarea>
+    </div>
+    <div class="gumbi">
+      <button class="btn btn-primary" type="submit">Objavi</button>
+    </div>
   </form>
 </div>
