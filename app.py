@@ -4,9 +4,10 @@ from Services.zapiski_service import ZapisekService
 from Services.komentar_service import KomentarService
 from Services.auth_service import AuthService
 import os
-from bottle import post, request, response, redirect
+from bottle import post, request, response, redirect, abort, static_file
 from Data.repository import Repo
 from Data.models import Zapisek, Komentar
+import uuid
 
 service = ZapisekService()
 komentar_service = KomentarService()
@@ -113,6 +114,15 @@ def moji_zapiski():
     zapiski = repo.dobi_zapiske_uporabnika_za_prikaz(int(user_id))
     return template('moji_zapiski.html', zapiski=zapiski)
 
+def _ctx_dodaj_zapisek():
+    return dict(
+        predmeti=service.repo.vrni_vse_predmete(),
+        programi=service.repo.vrni_vse_programe(),
+        fakultete=service.repo.vrni_vse_fakultete(),
+        imena_profesorjev=service.repo.vrni_vsa_imena_profesorjev(),
+        priimki_profesorjev=service.repo.vrni_vse_priimke_profesorjev(),
+        napaka=None,
+    )
 
 @get('/dodaj-zapisek')
 def prikazi_dodaj_zapisek():
@@ -134,6 +144,7 @@ def prikazi_dodaj_zapisek():
                     priimki_profesorjev=priimki_profesorjev,
                     napaka=None)
 
+
 @post('/dodaj-zapisek')
 def shrani_zapisek():
     user_id = request.get_cookie("user_id", secret='skrivnost123')
@@ -141,22 +152,27 @@ def shrani_zapisek():
         redirect('/prijava')
 
     try:
+        # 1) shrani datoteko
+        fl = request.files.get("datoteka")
+        download_name = None
+        if fl and fl.filename:
+            # poskrbi, da v bazo ne gre pot, ampak samo ime datoteke
+            download_name = os.path.basename(fl.filename)
+            fl.save(os.path.join('Data', 'zapiski', download_name), overwrite=True)
+
+        # 2) sestavi objekt zapiska (download_link = ime datoteke)
         zapisek = Zapisek(
             naslov=request.forms.get('naslov'),
             stevilo_strani=int(request.forms.get('stevilo_strani')),
             vrsta_dokumenta=request.forms.get('vrsta_dokumenta'),
             jezik=request.forms.get('jezik'),
-            download_link=request.forms.get('download_link')
+            download_link=download_name or ""   # če je datoteka obvezna, lahko dodaš preverjanje
         )
-        
-        fl = request.files.get("datoteka")
-        
-        fl.save(f"Data/zapiski/{fl.filename}")
+
         predmet = request.forms.get('predmet')
         faks = request.forms.get('faks')
         program = request.forms.get('program')
         letnik = int(request.forms.get('letnik'))
-
         ime_profesorja = request.forms.get('ime_profesorja')
         priimek_profesorja = request.forms.get('priimek_profesorja')
 
@@ -174,10 +190,16 @@ def shrani_zapisek():
         if uspeh:
             redirect('/profil')
         else:
-            return template('dodaj_zapisek.html', napaka="Napaka pri dodajanju zapiska.")
+            ctx = _ctx_dodaj_zapisek()
+            ctx['napaka'] = "Napaka pri dodajanju zapiska."
+            return template('dodaj_zapisek.html', **ctx)
+
     except Exception as e:
-        return template('dodaj_zapisek.html', napaka=f"Napaka: {str(e)}")
-    
+        ctx = _ctx_dodaj_zapisek()
+        ctx['napaka'] = f"Napaka: {str(e)}"
+        return template('dodaj_zapisek.html', **ctx)
+
+  
 @get('/zapisek/<id_zapiska:int>')
 def prikazi_zapisek(id_zapiska):
     user_id = request.get_cookie("user_id", secret='skrivnost123')
@@ -259,7 +281,15 @@ def registracija_post():
     auth.dodaj_uporabnika(uporabnisko_ime, "user", geslo1, id_faksa)
     redirect("/prijava")
 
+@get('/prenesi/<id_zapiska:int>')
+def prenesi_zapisek(id_zapiska):
+    z = service.repo.dobi_zapisek_po_id(id_zapiska)
+    if not z or not z.download_link:
+        abort(404, "Zapisek ali datoteka ne obstaja.")
 
+    root_dir = os.path.join(os.getcwd(), 'Data', 'zapiski')
+    # vrni kot prenos (Content-Disposition: attachment)
+    return static_file(z.download_link, root=root_dir, download=z.download_link)
 
 if __name__ == "__main__":
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)

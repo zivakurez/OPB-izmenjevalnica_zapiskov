@@ -386,7 +386,8 @@ class Repo:
             RETURNING id_predmeta
         """, (predmet.ime, predmet.izobrazevalni_program, predmet.letnik))
         
-        id_predmeta = self.cur.fetchone()[0]
+        row = self.cur.fetchone()
+        id_predmeta = row["id_predmeta"] 
         self.conn.commit()
         return id_predmeta
 

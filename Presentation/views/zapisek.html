@@ -56,7 +56,7 @@
   </div>
 
   <div class="gumbi">
-    <a href="{{ zapisek['download_link'] }}" class="btn btn-primary">Prenesi zapisek</a><br>
+    <a href="/prenesi/{{zapisek['id_zapiska']}}" class="btn btn-primary">Prenesi</a><br>
     
     % if uporabnik and (uporabnik.uporabnisko_ime == zapisek['ime_uporabnika'] or uporabnik.role == 'admin'):
       <form action="/izbrisi-zapisek/{{ zapisek['id_zapiska'] }}" method="post" onsubmit="return confirm('Res želite izbrisati ta zapisek?');">

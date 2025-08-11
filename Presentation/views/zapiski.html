@@ -31,7 +31,7 @@
             <td>{{ zapisek['stevilo_strani'] }}</td>
             <td>{{ zapisek['vrsta_dokumenta'] }}</td>
             <td>{{ zapisek['jezik'] }}</td>
-            <td><a href="{{ zapisek['download_link'] }}" target="_blank">Prenesi</a></td>
+            <td><a href="/prenesi/{{zapisek['id_zapiska']}}" class="btn btn-primary">Prenesi</a></td>
             <td>{{ zapisek['ime_predmeta'] }}</td>
             <td>{{ zapisek['izobrazevalni_program'] }}</td>
             <td>{{ zapisek['ime_fakultete'] }}</td>
