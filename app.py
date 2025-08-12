@@ -1,5 +1,4 @@
 from Presentation.bottleext import get, post, run, request, template, redirect, static_file, url, response, template_user, route
-
 from Services.zapiski_service import ZapisekService
 from Services.komentar_service import KomentarService
 from Services.auth_service import AuthService
@@ -15,11 +14,6 @@ auth = AuthService()
 
 SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
-
-# Nastavi mapo s predlogami
-from bottle import TEMPLATE_PATH
-import os
-#TEMPLATE_PATH.insert(0, os.path.abspath("Presentation/views"))
 
 @get('/static/<filename:path>')
 def static(filename):
@@ -152,21 +146,29 @@ def shrani_zapisek():
         redirect('/prijava')
 
     try:
-        # 1) shrani datoteko
         fl = request.files.get("datoteka")
-        download_name = None
-        if fl and fl.filename:
-            # poskrbi, da v bazo ne gre pot, ampak samo ime datoteke
-            download_name = os.path.basename(fl.filename)
-            fl.save(os.path.join('Data', 'zapiski', download_name), overwrite=True)
+        if not fl or not fl.filename:
+            ctx = _ctx_dodaj_zapisek()
+            ctx['napaka'] = "Niste izbrali datoteke."
+            return template('dodaj_zapisek.html', **ctx)
 
-        # 2) sestavi objekt zapiska (download_link = ime datoteke)
+        #ustvari unikatno ime (ohrani končnico)
+        ext = os.path.splitext(fl.filename)[1]  #npr. '.pdf'
+        unique_name = f"{uuid.uuid4()}{ext}"
+
+        #shrani datoteko
+        save_dir = os.path.join("Data", "zapiski")
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = os.path.join(save_dir, unique_name)
+        fl.save(save_path)
+
+        #sestavi objekt zapiska z novim imenom datoteke
         zapisek = Zapisek(
             naslov=request.forms.get('naslov'),
             stevilo_strani=int(request.forms.get('stevilo_strani')),
             vrsta_dokumenta=request.forms.get('vrsta_dokumenta'),
             jezik=request.forms.get('jezik'),
-            download_link=download_name or ""   # če je datoteka obvezna, lahko dodaš preverjanje
+            download_link=unique_name
         )
 
         predmet = request.forms.get('predmet')
@@ -187,17 +189,18 @@ def shrani_zapisek():
             program.strip().lower().capitalize()
         )
 
-        if uspeh:
-            redirect('/profil')
-        else:
-            ctx = _ctx_dodaj_zapisek()
-            ctx['napaka'] = "Napaka pri dodajanju zapiska."
-            return template('dodaj_zapisek.html', **ctx)
-
     except Exception as e:
         ctx = _ctx_dodaj_zapisek()
-        ctx['napaka'] = f"Napaka: {str(e)}"
+        ctx['napaka'] = f"{e.__class__.__name__}: {e}"
         return template('dodaj_zapisek.html', **ctx)
+
+    if uspeh:
+        redirect('/profil')
+    else:
+        ctx = _ctx_dodaj_zapisek()
+        ctx['napaka'] = "Napaka pri dodajanju zapiska."
+        return template('dodaj_zapisek.html', **ctx)
+
 
   
 @get('/zapisek/<id_zapiska:int>')
@@ -252,8 +255,17 @@ def izbrisi_zapisek(id_zapiska):
     if zapisek.id_uporabnika != int(user_id) and not service.repo.je_admin(user_id):
         return "Nimate dovoljenja za izbris tega zapiska."
 
+    #najprej izbriše datoteko s strežnika
+    if zapisek.download_link:
+        pot = os.path.join("Data", "zapiski", zapisek.download_link)
+        if os.path.exists(pot):
+            os.remove(pot)
+
+    #nato izbriše zapis iz baze
     service.repo.izbrisi_zapisek(id_zapiska)
+
     redirect('/moji-zapiski')
+
 
   
 @get("/registracija")
@@ -288,7 +300,7 @@ def prenesi_zapisek(id_zapiska):
         abort(404, "Zapisek ali datoteka ne obstaja.")
 
     root_dir = os.path.join(os.getcwd(), 'Data', 'zapiski')
-    # vrni kot prenos (Content-Disposition: attachment)
+    #vrni kot prenos (Content-Disposition: attachment)
     return static_file(z.download_link, root=root_dir, download=z.download_link)
 
 if __name__ == "__main__":
