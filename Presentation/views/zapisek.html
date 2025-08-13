@@ -1,46 +1,16 @@
-<!-- % rebase('osnova.html', naslov=zapisek['naslov'], stran='zapisek')
-
-<div class="container">
-  <h2>{{ zapisek['naslov'] }}</h2>
-  <p><strong>Predmet:</strong> {{ zapisek['ime_predmeta'] }}</p>
-  <p><strong>Program:</strong> {{ zapisek['izobrazevalni_program'] }}</p>
-  <p><strong>Fakulteta:</strong> {{ zapisek['ime_fakultete'] }} ({{ zapisek['univerza'] }})</p>
-  <p><strong>Profesorji:</strong> {{ zapisek['profesorji'] }}</p>
-  <p><strong>Jezik:</strong> {{ zapisek['jezik'] }}</p>
-  <p><strong>Vrsta dokumenta:</strong> {{ zapisek['vrsta_dokumenta'] }}</p>
-  <p><strong>Število strani:</strong> {{ zapisek['stevilo_strani'] }}</p>
-  <p><strong>Avtor:</strong> {{ zapisek['ime_uporabnika'] }}</p>
-  <p><a href="{{ zapisek['download_link'] }}" class="btn btn-primary">Prenesi zapisek</a></p>
-
-  % if uporabnik and (uporabnik.uporabnisko_ime == zapisek['ime_uporabnika'] or uporabnik.role == 'admin'):
-    <form action="/izbrisi-zapisek/{{ zapisek['id_zapiska'] }}" method="post" onsubmit="return confirm('Res želite izbrisati ta zapisek?');">
-      <button class="btn btn-primary" type="submit">Izbriši zapisek</button>
-    </form>
-  % end
-
-  <hr>
-  <h3>Komentarji</h3>
-  % for komentar in komentarji:
-    <div class="komentar">
-      <p><strong>{{ komentar['avtor'] }}</strong>: {{ komentar['besedilo'] }}</p>
-      % if uporabnik and (uporabnik.id_uporabnika == komentar['id_uporabnika'] or uporabnik.role == 'admin'):
-        <form action="/izbrisi-komentar/{{ komentar['id_komentarja'] }}" method="post">
-          <button class="btn btn-primary" type="submit">Izbriši</button>
-        </form>
-      % end
-    </div>
-  % end
-
-  <form action="/dodaj-komentar/{{ zapisek['id_zapiska'] }}" method="post">
-    <textarea name="besedilo" rows="3" placeholder="Dodaj komentar..." required></textarea><br>
-    <button class="btn btn-primary" type="submit">Objavi</button>
-  </form>
-</div> -->
-
-
-
 % rebase('osnova.html', naslov=zapisek['naslov'], stran='zapisek')
 
+<nav style="margin-bottom: 20px;">
+    <ul style="display: flex; list-style: none; padding: 0; gap: 15px; flex-wrap: wrap;">
+      <li><a href="{{url('/moji-zapiski')}}" class="btn btn-primary">Moji zapiski</a></li>
+      <li><a href="{{url('/moji-prenosi')}}" class="btn btn-primary">Preneseni zapiski</a></li>
+      <li><a href="/isci-zapiske" class="btn btn-primary">Iskanje zapiskov</a></li>
+      <li><a href="/dodaj-zapisek" class="btn btn-primary">Dodaj zapisek</a></li>
+      <li><a href="/odjava" class="btn btn-primary">Odjava</a></li>
+    </ul>
+  </nav>
+
+  
 <div class="container">
   <h2 class="glavni-naslov">{{ zapisek['naslov'] }}</h2>
 

@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <header>
+    <main class="container">
         <nav style="margin-bottom: 20px;">
             <ul style="display: flex; list-style: none; padding: 0; gap: 15px; flex-wrap: wrap;">
                 <li><a href="{{url('/moji-zapiski')}}" class="btn btn-primary">Moji zapiski</a></li>
@@ -15,55 +15,55 @@
                 <li><a href="/dodaj-zapisek" class="btn btn-primary">Dodaj zapisek</a></li>
                 <li><a href="/odjava" class="btn btn-primary">Odjava</a></li>
             </ul>
-        </nav>  
-    </header>
+        </nav> 
 
-    <main class="container">
-        <h2>Iskanje zapiskov</h2>
+        <div class="container">
+            <h2>Iskanje zapiskov</h2>
 
-        <form action="/isci-zapiske" method="get" class="filter-form">
-            <div class="form-group">
-                <label for="predmet">Predmet:</label>
-                <input type="text" id="predmet" name="predmet" class="form-control">
-            </div>
+            <form action="/isci-zapiske" method="get" class="filter-form">
+                <div class="form-group">
+                    <label for="predmet">Predmet:</label>
+                    <input type="text" id="predmet" name="predmet" class="form-control">
+                </div>
 
-            <div class="form-group">
-                <label for="fakulteta">Fakulteta:</label>
-                <input type="text" id="fakulteta" name="fakulteta" class="form-control">
-            </div>
+                <div class="form-group">
+                    <label for="fakulteta">Fakulteta:</label>
+                    <input type="text" id="fakulteta" name="fakulteta" class="form-control">
+                </div>
 
-            <div class="form-group">
-                <label for="program">Študijski program:</label>
-                <input type="text" id="program" name="program" class="form-control">
-            </div>
+                <div class="form-group">
+                    <label for="program">Študijski program:</label>
+                    <input type="text" id="program" name="program" class="form-control">
+                </div>
 
-            <div class="form-group">
-                <label for="profesor">Profesor:</label>
-                <input type="text" id="profesor" name="profesor" class="form-control">
-            </div>
+                <div class="form-group">
+                    <label for="profesor">Profesor:</label>
+                    <input type="text" id="profesor" name="profesor" class="form-control">
+                </div>
 
-            <button type="submit" class="btn btn-primary">Išči</button>
-        </form>
+                <button type="submit" class="btn btn-primary">Išči</button>
+            </form>
 
-        <section class="results">
-            % if zapiski:
-                <h2>Rezultati iskanja:</h2>
-                <ul class="notes-list">
-                % for zapis in zapiski:
-                    <li class="note-item">
-                        <td><a href="/zapisek/{{zapis['id_zapiska']}}">{{zapis['naslov']}}</a></td>
-                        <p><strong>Predmet:</strong> {{zapis['predmet']}}</p>
-                        <p><strong>Fakulteta:</strong> {{zapis['fakulteta']}}</p>
-                        <p><strong>Program:</strong> {{zapis['izobrazevalni_program']}}</p>
-                        <p><strong>Profesor:</strong> {{zapis['profesor']}}</p>
-                        <a href="/prenesi/{{zapis['id_zapiska']}}" class="btn btn-primary">Prenesi</a>
-                    </li>
+            <section class="results">
+                % if zapiski:
+                    <h2>Rezultati iskanja:</h2>
+                    <ul class="notes-list">
+                    % for zapis in zapiski:
+                        <li class="note-item">
+                            <td><a href="/zapisek/{{zapis['id_zapiska']}}">{{zapis['naslov']}}</a></td>
+                            <p><strong>Predmet:</strong> {{zapis['predmet']}}</p>
+                            <p><strong>Fakulteta:</strong> {{zapis['fakulteta']}}</p>
+                            <p><strong>Program:</strong> {{zapis['izobrazevalni_program']}}</p>
+                            <p><strong>Profesor:</strong> {{zapis['profesor']}}</p>
+                            <a href="/prenesi/{{zapis['id_zapiska']}}" class="btn btn-primary">Prenesi</a>
+                        </li>
+                    % end
+                    </ul>
+                % else:
+                    <p><em>Ni najdenih zapiskov.</em></p>
                 % end
-                </ul>
-            % else:
-                <p><em>Ni najdenih zapiskov.</em></p>
-            % end
-        </section>
+            </section>
+        </div>
     </main>
 </body>
 </html>
