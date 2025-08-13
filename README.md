@@ -2,7 +2,7 @@
 
 **Izmenjevalnica zapiskov** je spletna platforma, namenjena deljenju in izmenjavi različnih študijskih zapiskov.  
 Uporabniki lahko poiščejo, prenesejo, komentirajo ter nalagajo svoje zapiske.
-Aplikacija uporablja podatkovno bazo, ki hrani podatke o: zapiskih, avtorjih, komentarjih, fakultetah, predmetih in profesorjih  
+Aplikacija uporablja podatkovno bazo, ki hrani podatke o zapiskih, avtorjih, komentarjih, fakultetah, predmetih in profesorjih  
 
 ---
 
