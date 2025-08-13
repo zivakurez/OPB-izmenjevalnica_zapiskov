@@ -10,7 +10,7 @@
     </ul>
   </nav>
 
-  
+
 <div class="container">
   <h2 class="glavni-naslov">{{ zapisek['naslov'] }}</h2>
 
@@ -38,7 +38,16 @@
   <hr>
 
   <h2>Komentarji</h2>
-
+  <form action="/dodaj-komentar/{{ zapisek['id_zapiska'] }}" method="post" class="login-form">
+      <div class="form-group">
+        <label for="besedilo">Dodaj komentar:</label>
+        <textarea id="besedilo" name="besedilo" rows="3" class="form-control" placeholder="Dodaj komentar..." required></textarea>
+      </div>
+      <div class="gumbi">
+        <button class="btn btn-primary" type="submit">Objavi</button>
+      </div>
+    </form>
+    
   % for komentar in komentarji:
     <div class="komentar">
       <p><strong>{{ komentar['avtor'] }}</strong>: {{ komentar['besedilo'] }}</p>
@@ -50,13 +59,5 @@
     </div>
   % end
 
-  <form action="/dodaj-komentar/{{ zapisek['id_zapiska'] }}" method="post" class="login-form">
-    <div class="form-group">
-      <label for="besedilo">Dodaj komentar:</label>
-      <textarea id="besedilo" name="besedilo" rows="3" class="form-control" placeholder="Dodaj komentar..." required></textarea>
-    </div>
-    <div class="gumbi">
-      <button class="btn btn-primary" type="submit">Objavi</button>
-    </div>
-  </form>
+  
 </div>
