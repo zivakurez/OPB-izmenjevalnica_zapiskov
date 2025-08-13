@@ -32,11 +32,7 @@ Odpre se podrobna stran zapiska, kjer lahko preberete komentarje ali dodate svoj
 
 
 ##  Testni račun
-
-Za hiter dostop lahko uporabite testne prijavne podatke:
-uporabniško ime: j_novak
-Geslo: j_novak
-
+Za hiter dostop lahko uporabite testni račun z enakim uporabniškim imenom in geslom: j_novak
 
 
 # ER diagram
