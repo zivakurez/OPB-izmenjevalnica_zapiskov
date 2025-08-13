@@ -7,9 +7,9 @@ body {
 }
 
 .container {
-  max-width: 600px;
+  max-width: 1200px;
   margin: 40px auto;
-  background-color: #757575;
+  background-color: #e3dfdf;
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
