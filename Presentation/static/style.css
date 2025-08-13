@@ -8,14 +8,13 @@ body {
 
 .container {
   max-width: 1200px;
-  margin: 40px auto;
-  background-color: #e3dfdf;
+  margin: auto;
+  background-color: #fff;
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   overflow-x: hidden;
   align-items: center;
-  display: flex;
 }
 
 
@@ -24,16 +23,17 @@ body {
   text-align: center;
   font-size: 1.2rem;
   margin-bottom: 30px;
-  color: #28222f;
+  color: #685d76;
 }
 
 h2 {
-  margin-top: 30px;
+  text-align: center;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 
 form.login-form {
-  max-width: 600px;
+  max-width: 500px;
   margin: auto;
   background-color: #fff;
   padding: 30px;
@@ -63,10 +63,8 @@ form.login-form {
 }
 
 .gumbi {
-  width: 100%;
+  width: auto;
   align-items: center;
-  display: flex;
-  flex-direction: column;
   text-align: center;
 }
   
@@ -207,5 +205,38 @@ textarea.form-control {
 
 hr {
   margin: 30px 0;
+}
+
+
+/* koda za izgled strani "dodaj zapisek" */
+.form-dodaj-zapisek {
+  max-width: 600px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px 20px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+/* manjsa polja samo za ta obrazec */
+.form-dodaj-zapisek .form-control {
+  padding: 5px 8px;
+  font-size: 0.85rem;
+}
+
+/* manjsi labeli */
+.form-dodaj-zapisek label {
+  font-size: 0.85rem;
+  margin-bottom: 3px;
+}
+
+/* gumbi cez oba stolpca */
+.form-dodaj-zapisek .gumbi {
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
 }
 

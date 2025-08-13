@@ -1,6 +1,6 @@
 %rebase('osnova.html', naslov='Dodaj zapisek', stran='dodaj-zapisek')
 
-  <nav style="margin-bottom: 20px;">
+<nav style="margin-bottom: 20px;">
     <ul style="display: flex; list-style: none; padding: 0; gap: 15px; flex-wrap: wrap;">
       <li><a href="{{url('/moji-zapiski')}}" class="btn btn-primary">Moji zapiski</a></li>
       <li><a href="{{url('/moji-prenosi')}}" class="btn btn-primary">Preneseni zapiski</a></li>
@@ -10,86 +10,14 @@
     </ul>
   </nav>
 
-
 <main class="container">
   <h2>Dodaj zapisek</h2>
-  % if napaka:
-    <p class="opozorilo">{{napaka}}</p>
-  % end
-  <form method="POST" action="/dodaj-zapisek" class="filter-form" enctype="multipart/form-data">
-    <label>Naslov:</label>
-    <input type="text" name="naslov" required>
-
-    <label>Število strani:</label>
-    <input type="number" name="stevilo_strani" min="1" required>
-
-    <label>Vrsta dokumenta:</label>
-    <input type="text" name="vrsta_dokumenta" required>
-
-    <label>Jezik:</label>
-    <input type="text" name="jezik" required>
-
-    <label>Dodaj datoteko:</label>
-    <input type="file" name="datoteka" required>
-
-    <label>Ime predmeta:</label>
-    <input list="predmeti" name="predmet" required>
-    <datalist id="predmeti">
-      % for ime in predmeti:
-        <option value="{{ime}}">
-      % end
-    </datalist>
-
-    <label>Izobraževalni program:</label>
-    <input list="programi" name="program" required>
-    <datalist id="programi">
-      % for ime in programi:
-        <option value="{{ime}}">
-      % end
-    </datalist>
-
-    <label>Letnik:</label>
-    <input type="number" name="letnik" min="1" max="6" required>
-
-    <label>Fakulteta:</label>
-    <input list="fakultete" name="faks" required>
-    <datalist id="fakultete">
-      % for ime in fakultete:
-        <option value="{{ime}}">
-      % end
-    </datalist>
-
-    <label>Ime profesorja:</label>
-    <input list="imena_prof" name="ime_profesorja" required>
-    <datalist id="imena_prof">
-      % for ime in imena_profesorjev:
-        <option value="{{ime}}">
-      % end
-    </datalist>
-
-    <label>Priimek profesorja:</label>
-    <input list="priimki_prof" name="priimek_profesorja" required>
-    <datalist id="priimki_prof">
-      % for priimek in priimki_profesorjev:
-        <option value="{{priimek}}">
-      % end
-    </datalist>
-
-    <button type="submit" class="btn btn-primary">Dodaj zapisek</button>
-  </form>
-</main> 
-
-
-<!-- %rebase('osnova.html', naslov='Dodaj zapisek', stran='dodaj-zapisek')
-
-<main class="container">
-  <h2 class="glavni-naslov">Dodaj zapisek</h2>
 
   % if napaka:
     <p class="opozorilo">{{napaka}}</p>
   % end
 
-  <form method="POST" action="/dodaj-zapisek" enctype="multipart/form-data" class="login-form">
+  <form method="POST" action="/dodaj-zapisek" enctype="multipart/form-data" class="form-dodaj-zapisek">
 
     <div class="form-group">
       <label for="naslov">Naslov:</label>
@@ -175,4 +103,4 @@
       <button type="submit" class="btn btn-primary">Dodaj zapisek</button>
     </div>
   </form>
-</main> -->
+</main>

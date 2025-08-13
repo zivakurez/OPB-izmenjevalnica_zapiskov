@@ -1,5 +1,15 @@
 %rebase('osnova.html', naslov='Moji zapiski', stran='moji-zapiski')
 
+<nav style="margin-bottom: 20px;">
+    <ul style="display: flex; list-style: none; padding: 0; gap: 15px; flex-wrap: wrap;">
+      <li><a href="{{url('/moji-zapiski')}}" class="btn btn-primary">Moji zapiski</a></li>
+      <li><a href="{{url('/moji-prenosi')}}" class="btn btn-primary">Preneseni zapiski</a></li>
+      <li><a href="/isci-zapiske" class="btn btn-primary">Iskanje zapiskov</a></li>
+      <li><a href="/dodaj-zapisek" class="btn btn-primary">Dodaj zapisek</a></li>
+      <li><a href="/odjava" class="btn btn-primary">Odjava</a></li>
+    </ul>
+  </nav>
+
 <div class="container">
   <h2>Moji zapiski</h2>
 
