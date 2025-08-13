@@ -13,7 +13,7 @@ Aplikacija uporablja podatkovno bazo, ki hrani podatke o zapiskih, avtorjih, kom
 - **Nalaganje lastnih zapiskov** za skupno rabo  
 - **Dodajanje komentarjev** k posameznim zapiskom  
 - **Upravljanje lastnih zapiskov** (brisanje, pregled prenesenih)  
-- **Podrobni posameznega zapiska**
+- **Podrobnosti posameznega zapiska**
 
 ---
 
@@ -28,7 +28,7 @@ Po uspešni prijavi so vam na voljo naslednje možnosti:
  - iskanje zapiskov za prenos,
  - odjava
 Za dodatne informacije o posameznem zapisku kliknete na njegov naslov.
-Odpre se podrobna stran zapiska, kjer lahko preberete komentarje ali dodate svojega.
+Odpre se podrobna stran zapiska, kjer lahko tudi preberete komentarje ali dodate svojega.
 
 
 ##  Testni račun
