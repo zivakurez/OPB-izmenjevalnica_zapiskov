@@ -18,7 +18,6 @@ class KomentarService:
         self.repo.dodaj_komentar(komentar)
         return True
 
-
     def odgovori_na_komentar(self, vsebina: str, id_nadkomentarja: int, id_uporabnika: int) -> bool:
         nadkomentar = self.repo.dobi_komentar(id_nadkomentarja)
         if not nadkomentar:
@@ -39,13 +38,7 @@ class KomentarService:
     def komentarji_za_zapisek(self, id_zapiska: int) -> List[Komentar]:
         # samo glavni komentarji (ne odgovori)
         komentarji = self.repo.dobi_komentarje(id_zapiska)
-        return [k for k in komentarji if k.id_nadkomentarja is None]
-
-    def poglej_odgovore_na_komentar(self, id_komentarja: int) -> List[Komentar]:
-        return self.repo.dobi_odgovore(id_komentarja)
-
-    def komentarji_uporabnika(self, id_uporabnika: int) -> List[Komentar]:
-        return self.repo.dobi_komentarje_uporabnika(id_uporabnika)
+        return [k for k in komentarji]
 
     def izbrisi_komentar(self, id_komentarja: int, id_uporabnika: int) -> bool:
         komentar = self.repo.dobi_komentar(id_komentarja)

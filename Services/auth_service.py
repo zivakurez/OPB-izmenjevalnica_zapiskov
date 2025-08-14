@@ -45,6 +45,8 @@ class AuthService:
         user = self.repo.dobi_uporabnika_po_imenu(uporabnisko_ime)
         return user is not None
     
+    def je_admin(self, id_uporabnika: int) -> bool:
+        return self.repo.je_admin(id_uporabnika)
 
     def prijavi_uporabnika(self, uporabnisko_ime: str, geslo: str) -> Optional[UporabnikDto]:
         user = self.repo.dobi_uporabnika_po_imenu(uporabnisko_ime)

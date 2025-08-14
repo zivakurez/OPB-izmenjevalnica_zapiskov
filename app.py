@@ -204,7 +204,7 @@ def prikazi_zapisek(id_zapiska):
     uporabnik = auth.pridobi_uporabnika_po_id(user_id) if user_id else None
 
     zapisek = service.pridobi_zapisek_s_podatki(id_zapiska)
-    komentarji = service.repo.dobi_komentarje(id_zapiska)
+    komentarji = komentar_service.komentarji_za_zapisek(id_zapiska)
 
     return template('zapisek.html',
                     zapisek=zapisek,
@@ -231,7 +231,7 @@ def izbrisi_komentar(id_komentarja):
         redirect('/prijava')
 
     komentar = komentar_service.dobi_komentar(id_komentarja)
-    if komentar and (komentar.id_uporabnika == int(user_id) or service.repo.je_admin(user_id)):
+    if komentar and (komentar.id_uporabnika == int(user_id) or auth.je_admin(user_id)):
         komentar_service.izbrisi_komentar(id_komentarja, int(user_id))
 
     redirect(f"/zapisek/{komentar.id_zapiska}")
@@ -246,7 +246,7 @@ def izbrisi_zapisek(id_zapiska):
     if not zapisek:
         return "Zapisek ne obstaja."
 
-    if zapisek.id_uporabnika != int(user_id) and not service.repo.je_admin(user_id):
+    if zapisek.id_uporabnika != int(user_id) and not auth.je_admin(user_id):
         return "Nimate dovoljenja za izbris tega zapiska."
 
     #najprej izbriše datoteko s strežnika
