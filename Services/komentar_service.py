@@ -32,6 +32,9 @@ class KomentarService:
         )
         self.repo.dodaj_komentar(komentar)
         return True
+    
+    def dobi_komentar(self, id_komentarja: int) -> Optional[Komentar]:
+        return self.repo.dobi_komentar(id_komentarja)
 
     def komentarji_za_zapisek(self, id_zapiska: int) -> List[Komentar]:
         # samo glavni komentarji (ne odgovori)

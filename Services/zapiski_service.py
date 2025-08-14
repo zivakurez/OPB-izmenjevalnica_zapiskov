@@ -8,6 +8,7 @@ class ZapisekService:
     def __init__(self):
         self.repo = Repo()
 
+# Dodajanje zapiskov
     def dodaj_zapisek(
         self,
         zapisek: Zapisek,
@@ -58,7 +59,6 @@ class ZapisekService:
             # poveži predmet in faks
             self.repo.dodaj_predmet_faks(predmet.id_predmeta, faks.id_faksa)
 
-
         # Preveri profesorja
         profesor = self.repo.dobi_profesor_po_imenu(ime_profesorja, priimek_profesorja)
         if not profesor:
@@ -80,14 +80,39 @@ class ZapisekService:
             print("Napaka: Vrsta dokumenta je obvezna.")
             return False
 
-        # Dodaj zapisek
+        # Doda zapisek
         zapisek.id_predmeta = predmet.id_predmeta
         zapisek.id_uporabnika = id_uporabnika
 
         self.repo.dodaj_zapisek(zapisek)
         return True
 
+# Pridobivanje zapiskov 
+    def pridobi_vse_zapiske(self) -> List[Zapisek]:
+        return self.repo.dobi_zapiske()
 
+    def pridobi_zapisek_s_podatki(self, id_zapiska: int) -> Optional[Zapisek]:
+        return self.repo.dobi_zapisek_s_podatki(id_zapiska)
+    
+    def pridobi_vec_zapiskov_s_podatki(self, idji: List[int]) -> List[dict]:
+        return self.repo.pridobi_vec_zapiskov_s_podatki(idji)
+    
+    def pridobi_zapisek_po_id(self, id_zapiska: int) -> Optional[Zapisek]:
+        return self.repo.dobi_zapisek_po_id(id_zapiska)
+
+    def pridobi_zapiske_po_id(self, idji: List[int]) -> List[Zapisek]:
+        return self.repo.dobi_zapiske_po_idjih(idji)
+    
+    def pridobi_vse_zapiske_za_prikaz(self) -> List[dict]:
+        return self.repo.dobi_zapiske_za_prikaz()
+
+    def pridobi_zapiske_uporabnika_za_prikaz(self, id_uporabnika: int) -> List[dict]:
+        return self.repo.dobi_zapiske_uporabnika_za_prikaz(id_uporabnika)
+    
+    def filtriraj_zapiske(self, predmet, fakulteta, program, profesor):
+            return self.repo.filtriraj_zapiske(predmet, fakulteta, program, profesor)
+        
+# Prenosi
     def prenesi_zapisek(self, id_uporabnika: int, id_zapiska: int) -> bool:
         zapisek = self.repo.dobi_zapisek_po_id(id_zapiska)
         if not zapisek:
@@ -103,16 +128,16 @@ class ZapisekService:
         self.repo.dodaj_prenos(prenos)
         return True
 
-
-    def pridobi_vse_zapiske(self) -> List[Zapisek]:
-        return self.repo.dobi_zapiske()
-
-    def pridobi_prenesene_zapiske(self, id_uporabnika: int) -> List[Zapisek]:
-        prenosi = self.repo.dobi_prenose_uporabnika(id_uporabnika)
-        preneseni_idji = [p.id_zapiska for p in prenosi]
-        return self.repo.dobi_zapiske_po_idjih(preneseni_idji)
-
+    def zabelezi_prenos(self, id_uporabnika: int, id_zapiska: int) -> bool:
+        return self.repo.dodaj_prenos(int(id_uporabnika), int(id_zapiska))
     
+    def pridobi_prenesene_zapiske(self, id_uporabnika: int) -> List[Zapisek]:
+        preneseni_idji = self.repo.dobi_prenose_uporabnika(id_uporabnika)
+        return self.repo.pridobi_vec_zapiskov_s_podatki(preneseni_idji)
+
+
+
+#Brisanje zapiskov  
     def izbrisi_zapisek(self, id_zapiska: int, id_uporabnika: int) -> bool:
         zapisek = self.repo.dobi_zapisek_po_id(id_zapiska)
         if not zapisek:
@@ -133,12 +158,6 @@ class ZapisekService:
         print("Napaka: Nimate pravice za izbris tega zapiska.")
         return False
     
-    def pridobi_zapiske_s_podatki(self) -> List[dict]:
-        return self.repo.dobi_zapiske_za_prikaz()
-    
-    def filtriraj_zapiske(self, predmet, fakulteta, program, profesor):
-        return self.repo.filtriraj_zapiske(predmet, fakulteta, program, profesor)
-    
     def vrni_vse_predmete(self):
         return self.repo.vrni_vse_predmete()
 
@@ -153,6 +172,10 @@ class ZapisekService:
 
     def vrni_vse_priimke_profesorjev(self):
         return self.repo.vrni_vse_priimke_profesorjev()
+    
+    def dobi_id_faksa_po_imenu(self, ime_faksa: str) -> Optional[int]:
+        return self.repo.dobi_id_faksa_po_imenu(ime_faksa)
+
 
 
 

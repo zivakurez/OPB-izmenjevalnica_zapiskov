@@ -4,7 +4,6 @@ from Services.komentar_service import KomentarService
 from Services.auth_service import AuthService
 import os
 from bottle import post, request, response, redirect, abort, static_file
-from Data.repository import Repo
 from Data.models import Zapisek, Komentar
 import uuid
 
@@ -21,7 +20,7 @@ def static(filename):
 
 @get('/vsi_zapiski')
 def index():
-    zapiski = service.pridobi_zapiske_s_podatki()
+    zapiski = service.pridobi_vse_zapiske_za_prikaz()
     return template('zapiski.html', zapiski=zapiski)
 
 @get('/moji-prenosi/<id_uporabnika:int>')
@@ -35,8 +34,7 @@ def moji_prenosi():
     if not user_id:
         redirect('/prijava')
 
-    repo = Repo()
-    preneseni_zapiski = repo.dobi_prenose_uporabnika(int(user_id))
+    preneseni_zapiski = service.pridobi_prenesene_zapiske(int(user_id))
     return template('prenosi.html', prenosi=preneseni_zapiski)
 
 @get('/')
@@ -74,10 +72,9 @@ def profil():
     if not user_id:
         redirect('/prijava')
 
-    repo = Repo()
-    uporabnik = repo.dobi_uporabnika(int(user_id))
-    zapiski = repo.dobi_zapiske_uporabnika_za_prikaz(int(user_id))
-    prenosi = repo.dobi_prenose_uporabnika(int(user_id))
+    uporabnik = auth.pridobi_uporabnika_po_id(int(user_id))
+    zapiski = service.pridobi_zapiske_uporabnika_za_prikaz(int(user_id))
+    prenosi = service.pridobi_prenesene_zapiske(int(user_id))
 
     return template('profil.html', uporabnik=uporabnik, zapiski=zapiski, prenosi=prenosi)
 
@@ -103,17 +100,16 @@ def moji_zapiski():
     if not user_id:
         redirect('/prijava')
 
-    repo = Repo()
-    zapiski = repo.dobi_zapiske_uporabnika_za_prikaz(int(user_id))
+    zapiski = service.pridobi_zapiske_uporabnika_za_prikaz(int(user_id))
     return template('moji_zapiski.html', zapiski=zapiski)
 
 def _ctx_dodaj_zapisek():
     return dict(
-        predmeti=service.repo.vrni_vse_predmete(),
-        programi=service.repo.vrni_vse_programe(),
-        fakultete=service.repo.vrni_vse_fakultete(),
-        imena_profesorjev=service.repo.vrni_vsa_imena_profesorjev(),
-        priimki_profesorjev=service.repo.vrni_vse_priimke_profesorjev(),
+        predmeti=service.vrni_vse_predmete(),
+        programi=service.vrni_vse_programe(),
+        fakultete=service.vrni_vse_fakultete(),
+        imena_profesorjev=service.vrni_vsa_imena_profesorjev(),
+        priimki_profesorjev=service.vrni_vse_priimke_profesorjev(),
         napaka=None,
     )
 
@@ -123,11 +119,11 @@ def prikazi_dodaj_zapisek():
     if not user_id:
         redirect('/prijava')
 
-    predmeti = service.repo.vrni_vse_predmete()
-    programi = service.repo.vrni_vse_programe()
-    fakultete = service.repo.vrni_vse_fakultete()
-    imena_profesorjev = service.repo.vrni_vsa_imena_profesorjev()
-    priimki_profesorjev = service.repo.vrni_vse_priimke_profesorjev()
+    predmeti = service.vrni_vse_predmete()
+    programi = service.vrni_vse_programe()
+    fakultete = service.vrni_vse_fakultete()
+    imena_profesorjev = service.vrni_vsa_imena_profesorjev()
+    priimki_profesorjev = service.vrni_vse_priimke_profesorjev()
 
     return template('dodaj_zapisek.html',
                     predmeti=predmeti,
@@ -205,9 +201,9 @@ def shrani_zapisek():
 @get('/zapisek/<id_zapiska:int>')
 def prikazi_zapisek(id_zapiska):
     user_id = request.get_cookie("user_id", secret='skrivnost123')
-    uporabnik = service.repo.dobi_uporabnika(user_id) if user_id else None
+    uporabnik = auth.pridobi_uporabnika_po_id(user_id) if user_id else None
 
-    zapisek = service.repo.dobi_zapisek_s_podatki(id_zapiska)
+    zapisek = service.pridobi_zapisek_s_podatki(id_zapiska)
     komentarji = service.repo.dobi_komentarje(id_zapiska)
 
     return template('zapisek.html',
@@ -223,7 +219,6 @@ def dodaj_komentar(id_zapiska):
         redirect('/prijava')
 
     besedilo = request.forms.get('besedilo')
-
     komentar_service.dodaj_komentar(besedilo, id_zapiska, uporabnik)
 
     redirect(f'/zapisek/{id_zapiska}')
@@ -235,9 +230,9 @@ def izbrisi_komentar(id_komentarja):
     if not user_id:
         redirect('/prijava')
 
-    komentar = service.repo.dobi_komentar(id_komentarja)
+    komentar = komentar_service.dobi_komentar(id_komentarja)
     if komentar and (komentar.id_uporabnika == int(user_id) or service.repo.je_admin(user_id)):
-        service.repo.izbrisi_komentar(id_komentarja)
+        komentar_service.izbrisi_komentar(id_komentarja, int(user_id))
 
     redirect(f"/zapisek/{komentar.id_zapiska}")
 
@@ -247,7 +242,7 @@ def izbrisi_zapisek(id_zapiska):
     if not user_id:
         redirect('/prijava')
 
-    zapisek = service.repo.dobi_zapisek_po_id(id_zapiska)
+    zapisek = service.pridobi_zapisek_po_id(id_zapiska)
     if not zapisek:
         return "Zapisek ne obstaja."
 
@@ -261,14 +256,14 @@ def izbrisi_zapisek(id_zapiska):
             os.remove(pot)
 
     #nato izbriše zapis iz baze
-    service.repo.izbrisi_zapisek(id_zapiska)
+    service.izbrisi_zapisek(id_zapiska, int(user_id))
 
     redirect('/moji-zapiski')
 
  
 @get("/registracija")
 def registracija_get():
-    fakultete = service.repo.dobi_fakultete()  
+    fakultete = service.vrni_vse_fakultete()  
     return template("registracija", fakultete=fakultete)
 
 @post("/registracija")
@@ -284,7 +279,7 @@ def registracija_post():
     if auth.obstaja_uporabnik(uporabnisko_ime):
         return "Uporabniško ime je že zasedeno."
 
-    id_faksa = service.repo.dobi_id_faksa_po_imenu(ime_faksa)
+    id_faksa = service.dobi_id_faksa_po_imenu(ime_faksa)
     if id_faksa is None:
         return "Izbran faks ne obstaja."
 
@@ -297,11 +292,11 @@ def prenesi_zapisek(id_zapiska):
     if not user_id:
         redirect('/prijava')
         
-    z = service.repo.dobi_zapisek_po_id(id_zapiska)
+    z = service.pridobi_zapisek_po_id(id_zapiska)
     if not z or not z.download_link:
         abort(404, "Zapisek ali datoteka ne obstaja.")
         
-    service.repo.dodaj_prenos_ce_ne_obstaja(int(user_id), id_zapiska)
+    service.zabelezi_prenos(int(user_id), id_zapiska)
 
     root_dir = os.path.join(os.getcwd(), 'Data', 'zapiski')
     #vrni kot prenos

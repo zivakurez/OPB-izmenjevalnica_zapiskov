@@ -34,10 +34,17 @@ class AuthService:
             uporabnisko_ime=uporabnik.uporabnisko_ime,
             role=uporabnik.role
         )
+    
+    def pridobi_uporabnika_po_id(self, id_uporabnika: int) -> Optional[UporabnikDto]:
+        return self.repo.dobi_uporabnika(id_uporabnika)
+    
+    def pridobi_uporabnika_po_imenu(self, uporabnisko_ime: str) -> Optional[Uporabnik]:
+        return self.repo.dobi_uporabnika_po_imenu(uporabnisko_ime)
 
     def obstaja_uporabnik(self, uporabnisko_ime: str) -> bool:
         user = self.repo.dobi_uporabnika_po_imenu(uporabnisko_ime)
         return user is not None
+    
 
     def prijavi_uporabnika(self, uporabnisko_ime: str, geslo: str) -> Optional[UporabnikDto]:
         user = self.repo.dobi_uporabnika_po_imenu(uporabnisko_ime)
@@ -55,3 +62,7 @@ class AuthService:
                 role=user.role
             )
         return None
+    
+    
+
+

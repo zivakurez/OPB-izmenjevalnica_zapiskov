@@ -69,9 +69,6 @@ class Repo:
         uporabnik.id_uporabnika = self.cur.fetchone()["id_uporabnika"]
         self.conn.commit()
 
-
-
-
     # Zapiski
     def dobi_zapiske(self) -> List[Zapisek]:
         self.cur.execute("""
@@ -87,8 +84,8 @@ class Repo:
     def dobi_zapiske_po_idjih(self, idji: List[int]) -> List[Zapisek]:
         if not idji:
             return []
-        sql = "SELECT * FROM zapisek WHERE id_zapiska = ANY(%s)"
-        self.cur.execute(sql, (idji,))
+        sql = f"SELECT * FROM zapisek WHERE id_zapiska IN %s"
+        self.cur.execute(sql, (tuple(idji),))
         rows = self.cur.fetchall()
         return [Zapisek.from_dict(row) for row in rows]
 
@@ -252,6 +249,44 @@ class Repo:
             return dict(row)
         return None
 
+    def pridobi_vec_zapiskov_s_podatki(self, idji: List[int]) -> List[dict]:
+        if not idji:
+            return []
+
+        sql = """
+            SELECT 
+                z.id_zapiska,
+                z.naslov,
+                z.datum_objave,
+                z.stevilo_strani,
+                z.vrsta_dokumenta,
+                z.jezik,
+                z.download_link,
+
+                u.uporabnisko_ime AS ime_uporabnika,
+                p.ime AS ime_predmeta,
+                p.izobrazevalni_program,
+                f.ime AS ime_fakultete,
+                f.univerza,
+                string_agg(DISTINCT pr.ime || ' ' || pr.priimek, ', ') AS profesorji
+
+            FROM zapisek z
+            JOIN uporabnik u ON z.id_uporabnika = u.id_uporabnika
+            JOIN predmet p ON z.id_predmeta = p.id_predmeta
+            JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
+            JOIN faks f ON pf.id_faksa = f.id_faksa
+            LEFT JOIN profesor_predmet pp ON p.id_predmeta = pp.id_predmeta
+            LEFT JOIN profesor pr ON pp.id_profesorja = pr.id_profesorja
+
+            WHERE z.id_zapiska = ANY(%s)
+
+            GROUP BY z.id_zapiska, u.uporabnisko_ime, p.ime, p.izobrazevalni_program, f.ime, f.univerza
+            ORDER BY z.datum_objave DESC;
+        """
+
+        self.cur.execute(sql, (idji,))
+        return [dict(row) for row in self.cur.fetchall()]
+
     # Komentarji
 
     def dobi_komentarje(self, id_zapiska: int) -> List[dict]:
@@ -309,7 +344,7 @@ class Repo:
 
     # Prenosi
 
-    def dodaj_prenos_ce_ne_obstaja(self, id_uporabnika, id_zapiska):
+    def dodaj_prenos(self, id_uporabnika, id_zapiska):
         self.cur.execute("""
             SELECT 1 FROM prenosi WHERE id_uporabnika=%s AND id_zapiska=%s
         """, (id_uporabnika, id_zapiska))
@@ -321,28 +356,13 @@ class Repo:
         self.conn.commit()
         return True
 
-    def dobi_prenose_uporabnika(self, id_uporabnika: int) -> List[dict]:
+    def dobi_prenose_uporabnika(self, id_uporabnika: int) -> List[int]:
         self.cur.execute("""
-            SELECT
-                z.id_zapiska,
-                z.naslov,
-                z.datum_objave,
-                z.vrsta_dokumenta,
-                p.ime AS ime_predmeta,
-                f.ime AS ime_fakultete,
-                u.uporabnisko_ime AS avtor
-            FROM prenosi pr
-            JOIN zapisek z ON pr.id_zapiska = z.id_zapiska
-            JOIN uporabnik u ON z.id_uporabnika = u.id_uporabnika
-            JOIN predmet p ON z.id_predmeta = p.id_predmeta
-            JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
-            JOIN faks f ON pf.id_faksa = f.id_faksa
-            WHERE pr.id_uporabnika = %s
+            SELECT id_zapiska
+            FROM prenosi
+            WHERE id_uporabnika = %s
         """, (id_uporabnika,))
-        
-        rows = [dict(row) for row in self.cur.fetchall()]
-        rows.reverse()             
-        return rows
+        return [row["id_zapiska"] for row in self.cur.fetchall()]
 
 
     def izbrisi_prenose_zapiska(self, id_zapiska: int):
