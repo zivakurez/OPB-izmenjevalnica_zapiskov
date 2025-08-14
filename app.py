@@ -218,7 +218,7 @@ def dodaj_komentar(id_zapiska):
     if not uporabnik:
         redirect('/prijava')
 
-    besedilo = request.forms.get('besedilo')
+    besedilo = request.forms.getunicode('besedilo')
     komentar_service.dodaj_komentar(besedilo, id_zapiska, uporabnik)
 
     redirect(f'/zapisek/{id_zapiska}')

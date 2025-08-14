@@ -10,8 +10,6 @@ from Data.models import (
 )
 
 import Data.auth_public as auth
-
-
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 
 # nastavimo povezavo do baze
