@@ -32,7 +32,8 @@ Odpre se podrobna stran zapiska, kjer lahko tudi preberete komentarje ali dodate
 
 
 ##  Testni račun
-Za hiter dostop lahko uporabite testni račun z enakim uporabniškim imenom in geslom: j_novak
+Za hiter dostop lahko uporabite testni račun z enakim uporabniškim imenom in geslom: j_novak.
+Uporabniško ime za amdin-a je admin, geslo pa jazsemadmin
 
 
 # ER diagram
