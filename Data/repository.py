@@ -14,7 +14,7 @@ import Data.auth_public as auth
 
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 
-# Nastaviš povezavo do baze prek okolja ali ročno
+# nastavimo povezavo do baze
 DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
 
 class Repo:
@@ -91,7 +91,6 @@ class Repo:
         self.cur.execute(sql, (idji,))
         rows = self.cur.fetchall()
         return [Zapisek.from_dict(row) for row in rows]
-
 
     def dodaj_zapisek(self, z: Zapisek):
         self.cur.execute("""
@@ -281,13 +280,13 @@ class Repo:
 
         
     def izbrisi_komentarje_zapiska(self, id_zapiska: int):
-        # Najprej izbriši odgovore (tiste z nadkomentarjem)
+        # najprej izbrišemo odgovore (tiste z nadkomentarjem)
         self.cur.execute("""
             DELETE FROM komentar
             WHERE id_zapiska = %s AND id_nadkomentarja IS NOT NULL
         """, (id_zapiska,))
         
-        # Nato še osnovne komentarje
+        # nato še osnovne komentarje
         self.cur.execute("""
             DELETE FROM komentar
             WHERE id_zapiska = %s AND id_nadkomentarja IS NULL
@@ -310,12 +309,17 @@ class Repo:
 
     # Prenosi
 
-    def dodaj_prenos(self, p: Prenos):
+    def dodaj_prenos_ce_ne_obstaja(self, id_uporabnika, id_zapiska):
         self.cur.execute("""
-            INSERT INTO prenosi (id_uporabnika, id_zapiska)
-            VALUES (%s, %s)
-        """, (p.id_uporabnika, p.id_zapiska))
+            SELECT 1 FROM prenosi WHERE id_uporabnika=%s AND id_zapiska=%s
+        """, (id_uporabnika, id_zapiska))
+        if self.cur.fetchone():
+            return False
+        self.cur.execute("""
+            INSERT INTO prenosi (id_uporabnika, id_zapiska) VALUES (%s, %s)
+        """, (id_uporabnika, id_zapiska))
         self.conn.commit()
+        return True
 
     def dobi_prenose_uporabnika(self, id_uporabnika: int) -> List[dict]:
         self.cur.execute("""
@@ -335,7 +339,10 @@ class Repo:
             JOIN faks f ON pf.id_faksa = f.id_faksa
             WHERE pr.id_uporabnika = %s
         """, (id_uporabnika,))
-        return [dict(row) for row in self.cur.fetchall()]
+        
+        rows = [dict(row) for row in self.cur.fetchall()]
+        rows.reverse()             
+        return rows
 
 
     def izbrisi_prenose_zapiska(self, id_zapiska: int):
@@ -360,7 +367,6 @@ class Repo:
             SELECT ime FROM faks
         """)
         return [row["ime"] for row in self.cur.fetchall()]
-
 
     def dobi_profesor_po_imenu(self, ime: str, priimek: str) -> Optional[Profesor]:
         self.cur.execute("SELECT * FROM profesor WHERE ime = %s AND priimek = %s", (ime, priimek))
@@ -391,7 +397,6 @@ class Repo:
         self.conn.commit()
         return id_predmeta
 
-
     def dobi_predmet_polno(self, ime: str, izobrazevalni_program: str, letnik: int) -> Optional[Predmet]:
         self.cur.execute("""
             SELECT *
@@ -417,7 +422,7 @@ class Repo:
         """, (id_profesorja, id_faksa))
         self.conn.commit()
         
-    #prijava
+    # Prijava
     def preveri_prijavo(self, uporabnisko_ime, geslo):
         self.cur.execute("""
             SELECT * FROM uporabnik
@@ -426,8 +431,7 @@ class Repo:
         row = self.cur.fetchone()
         return Uporabnik.from_dict(row) if row else None
 
-    #poizvedbe
-
+    # Poizvedbe
     # Predmeti
     def vrni_vse_predmete(self) -> List[str]:
         self.cur.execute("SELECT DISTINCT ime FROM predmet ORDER BY ime")
@@ -454,7 +458,7 @@ class Repo:
         return [row["priimek"] for row in self.cur.fetchall()]
 
 
-    #preveri če je admin
+    # Preveri če je admin
     def je_admin(self, id_uporabnika: int) -> bool:
         self.cur.execute("""
             SELECT role FROM uporabnik WHERE id_uporabnika = %s
@@ -463,7 +467,7 @@ class Repo:
         return row and row['role'] == 'admin'
 
 
-    # zapri povezavo
+    # Zapri povezavo
     def zapri(self):
         self.cur.close()
         self.conn.close()

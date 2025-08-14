@@ -61,7 +61,6 @@ def obdelaj_prijavo():
     else:
         return template('prijava.html', napaka="Napačno uporabniško ime ali geslo")
 
-    
 
 @get('/odjava')
 def odjava():
@@ -266,8 +265,7 @@ def izbrisi_zapisek(id_zapiska):
 
     redirect('/moji-zapiski')
 
-
-  
+ 
 @get("/registracija")
 def registracija_get():
     fakultete = service.repo.dobi_fakultete()  
@@ -295,12 +293,18 @@ def registracija_post():
 
 @get('/prenesi/<id_zapiska:int>')
 def prenesi_zapisek(id_zapiska):
+    user_id = request.get_cookie("user_id", secret='skrivnost123')
+    if not user_id:
+        redirect('/prijava')
+        
     z = service.repo.dobi_zapisek_po_id(id_zapiska)
     if not z or not z.download_link:
         abort(404, "Zapisek ali datoteka ne obstaja.")
+        
+    service.repo.dodaj_prenos_ce_ne_obstaja(int(user_id), id_zapiska)
 
     root_dir = os.path.join(os.getcwd(), 'Data', 'zapiski')
-    #vrni kot prenos (Content-Disposition: attachment)
+    #vrni kot prenos
     return static_file(z.download_link, root=root_dir, download=z.download_link)
 
 if __name__ == "__main__":
