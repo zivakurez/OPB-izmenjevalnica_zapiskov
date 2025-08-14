@@ -94,6 +94,8 @@ form.login-form {
   text-align: center;
 }
 
+
+/* vse za registracijo */
 .nov-uporabnik {
   max-width: 400px;
   margin: 30px auto;
@@ -104,7 +106,6 @@ form.login-form {
   text-align: center; /* poravna gumb in tekst na sredino */
 }
 
-/* Gumb za ustvarjanje računa */
 .nov-uporabnik .btn.btn-primary {
   background-color: #f8c8dc;
   color: black;
@@ -156,7 +157,7 @@ table.table tr:hover {
   background-color: #f1f1f1;
 }
 
-/* pastelno roza glava */
+/* pastelno roza glava tabele */
 table.table thead th {
   background-color: #f8c8dc;
   font-weight: bold;
@@ -221,19 +222,16 @@ hr {
   box-shadow: 0 0 8px rgba(0,0,0,0.1);
 }
 
-/* manjsa polja samo za ta obrazec */
 .form-dodaj-zapisek .form-control {
   padding: 5px 8px;
   font-size: 0.85rem;
 }
 
-/* manjsi labeli */
 .form-dodaj-zapisek label {
   font-size: 0.85rem;
   margin-bottom: 3px;
 }
 
-/* gumbi cez oba stolpca */
 .form-dodaj-zapisek .gumbi {
   grid-column: span 2;
   display: flex;
