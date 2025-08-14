@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from Data.models import (
     Uporabnik, UporabnikDto, Zapisek, Komentar, Predmet, Profesor,
-    Faks, Prenos, PredmetFaks, ProfesorFaks, ProfesorPredmet
+    Faks, Prenos, PredmetFaks, ProfesorFaks
 )
 
 import Data.auth_public as auth
@@ -91,11 +91,13 @@ class Repo:
         self.cur.execute("""
             INSERT INTO zapisek (
                 stevilo_strani, vrsta_dokumenta, naslov,
-                jezik, download_link, id_predmeta, id_uporabnika
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                jezik, download_link, id_predmeta, id_uporabnika, id_profesorja
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id_zapiska;
         """, (
             z.stevilo_strani, z.vrsta_dokumenta, z.naslov,
-            z.jezik, z.download_link, z.id_predmeta, z.id_uporabnika
+            z.jezik, z.download_link, z.id_predmeta, z.id_uporabnika, z.id_profesorja
         ))
         self.conn.commit()
         
@@ -119,17 +121,15 @@ class Repo:
                 p.izobrazevalni_program,
                 f.ime AS ime_fakultete,
                 f.univerza,
-                string_agg(DISTINCT pr.ime || ' ' || pr.priimek, ', ') AS profesorji
+                (pr.ime || ' ' || pr.priimek) AS profesor
 
             FROM zapisek z
             JOIN uporabnik u ON z.id_uporabnika = u.id_uporabnika
             JOIN predmet p ON z.id_predmeta = p.id_predmeta
             JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
             JOIN faks f ON pf.id_faksa = f.id_faksa
-            LEFT JOIN profesor_predmet pp ON p.id_predmeta = pp.id_predmeta
-            LEFT JOIN profesor pr ON pp.id_profesorja = pr.id_profesorja
+            LEFT JOIN profesor pr ON pr.id_profesorja = z.id_profesorja
 
-            GROUP BY z.id_zapiska, u.uporabnisko_ime, p.ime, p.izobrazevalni_program, f.ime, f.univerza
             ORDER BY z.datum_objave DESC;
 
         """)
@@ -138,48 +138,46 @@ class Repo:
     def dobi_zapiske_uporabnika_za_prikaz(self, id_uporabnika: int) -> List[dict]:
         self.cur.execute("""
             SELECT
-                z.id_zapiska,
-                z.naslov,
-                z.datum_objave,
-                z.stevilo_strani,
-                z.vrsta_dokumenta,
-                z.jezik,
-                z.download_link,
-                u.uporabnisko_ime AS ime_uporabnika,
-                p.ime AS ime_predmeta,
-                p.izobrazevalni_program,
-                f.ime AS ime_fakultete,
-                f.univerza,
-                string_agg(DISTINCT pr.ime || ' ' || pr.priimek, ', ') AS profesorji
-            FROM zapisek z
-            JOIN uporabnik u ON z.id_uporabnika = u.id_uporabnika
-            JOIN predmet p ON z.id_predmeta = p.id_predmeta
-            JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
-            JOIN faks f ON pf.id_faksa = f.id_faksa
-            LEFT JOIN profesor_predmet pp ON p.id_predmeta = pp.id_predmeta
-            LEFT JOIN profesor pr ON pp.id_profesorja = pr.id_profesorja
-            WHERE z.id_uporabnika = %s
-            GROUP BY z.id_zapiska, u.uporabnisko_ime, p.ime, p.izobrazevalni_program, f.ime, f.univerza
-            ORDER BY z.datum_objave DESC
+            z.id_zapiska,
+            z.naslov,
+            z.datum_objave,
+            z.stevilo_strani,
+            z.vrsta_dokumenta,
+            z.jezik,
+            z.download_link,
+            u.uporabnisko_ime AS ime_uporabnika,
+            p.ime AS ime_predmeta,
+            p.izobrazevalni_program,
+            f.ime AS ime_fakultete,
+            f.univerza,
+            (pr.ime || ' ' || pr.priimek) AS profesor
+        FROM zapisek z
+        JOIN uporabnik     u  ON u.id_uporabnika = z.id_uporabnika
+        JOIN predmet       p  ON p.id_predmeta   = z.id_predmeta
+        JOIN predmet_faks  pf ON pf.id_predmeta  = p.id_predmeta
+        JOIN faks          f  ON f.id_faksa      = pf.id_faksa
+        LEFT JOIN profesor pr ON pr.id_profesorja = z.id_profesorja
+        WHERE z.id_uporabnika = %s
+        ORDER BY z.datum_objave DESC, z.id_zapiska DESC;
         """, (id_uporabnika,))
         return [dict(row) for row in self.cur.fetchall()]
 
 
     def filtriraj_zapiske(self, predmet, fakulteta, program, profesor):
         query = """
-            SELECT 
-                z.naslov, 
-                z.id_zapiska, 
-                COALESCE(p.ime, 'Ni določeno') AS predmet, 
+            SELECT DISTINCT
+                z.id_zapiska,
+                z.naslov,
+                z.datum_objave,  -- DODANO
+                COALESCE(p.ime, 'Ni določeno') AS predmet,
                 COALESCE(f.ime, 'Ni določeno') AS fakulteta,
                 COALESCE(p.izobrazevalni_program, 'Ni določeno') AS izobrazevalni_program,
                 COALESCE(pr.ime || ' ' || pr.priimek, 'Ni določeno') AS profesor
             FROM zapisek z
-            JOIN predmet p ON z.id_predmeta = p.id_predmeta
-            LEFT JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
-            LEFT JOIN faks f ON pf.id_faksa = f.id_faksa
-            LEFT JOIN profesor_predmet pp ON p.id_predmeta = pp.id_predmeta
-            LEFT JOIN profesor pr ON pp.id_profesorja = pr.id_profesorja
+            LEFT JOIN predmet p ON p.id_predmeta = z.id_predmeta
+            LEFT JOIN predmet_faks pf ON pf.id_predmeta = p.id_predmeta
+            LEFT JOIN faks f ON f.id_faksa = pf.id_faksa
+            LEFT JOIN profesor pr ON pr.id_profesorja = z.id_profesorja
             WHERE 1=1
         """
 
@@ -222,24 +220,19 @@ class Repo:
                 z.vrsta_dokumenta,
                 z.jezik,
                 z.download_link,
-
                 u.uporabnisko_ime AS ime_uporabnika,
                 p.ime AS ime_predmeta,
                 p.izobrazevalni_program,
                 f.ime AS ime_fakultete,
                 f.univerza,
-                string_agg(DISTINCT pr.ime || ' ' || pr.priimek, ', ') AS profesorji
-
+                COALESCE(pr.ime || ' ' || pr.priimek, 'Ni določeno') AS profesor
             FROM zapisek z
             JOIN uporabnik u ON z.id_uporabnika = u.id_uporabnika
             JOIN predmet p ON z.id_predmeta = p.id_predmeta
             JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
             JOIN faks f ON pf.id_faksa = f.id_faksa
-            LEFT JOIN profesor_predmet pp ON p.id_predmeta = pp.id_predmeta
-            LEFT JOIN profesor pr ON pp.id_profesorja = pr.id_profesorja
-
-            WHERE z.id_zapiska = %s
-            GROUP BY z.id_zapiska, u.uporabnisko_ime, p.ime, p.izobrazevalni_program, f.ime, f.univerza
+            LEFT JOIN profesor pr ON pr.id_profesorja = z.id_profesorja
+        WHERE z.id_zapiska = %s
         """, (id_zapiska,))
         
         row = self.cur.fetchone()
@@ -260,26 +253,20 @@ class Repo:
                 z.vrsta_dokumenta,
                 z.jezik,
                 z.download_link,
-
                 u.uporabnisko_ime AS ime_uporabnika,
                 p.ime AS ime_predmeta,
                 p.izobrazevalni_program,
                 f.ime AS ime_fakultete,
                 f.univerza,
-                string_agg(DISTINCT pr.ime || ' ' || pr.priimek, ', ') AS profesorji
-
+                COALESCE(pr.ime || ' ' || pr.priimek, 'Ni določeno') AS profesor
             FROM zapisek z
             JOIN uporabnik u ON z.id_uporabnika = u.id_uporabnika
             JOIN predmet p ON z.id_predmeta = p.id_predmeta
             JOIN predmet_faks pf ON p.id_predmeta = pf.id_predmeta
             JOIN faks f ON pf.id_faksa = f.id_faksa
-            LEFT JOIN profesor_predmet pp ON p.id_predmeta = pp.id_predmeta
-            LEFT JOIN profesor pr ON pp.id_profesorja = pr.id_profesorja
-
+            LEFT JOIN profesor pr ON pr.id_profesorja = z.id_profesorja
             WHERE z.id_zapiska = ANY(%s)
-
-            GROUP BY z.id_zapiska, u.uporabnisko_ime, p.ime, p.izobrazevalni_program, f.ime, f.univerza
-            ORDER BY z.datum_objave DESC;
+            ORDER BY z.datum_objave DESC, z.id_zapiska DESC;
         """
 
         self.cur.execute(sql, (idji,))
@@ -369,7 +356,6 @@ class Repo:
 
 # Predmeti, profesorji, faksi
     
-
     def dobi_faks_po_imenu(self, ime: str) -> Optional[Faks]:
         self.cur.execute("SELECT * FROM faks WHERE ime = %s", (ime,))
         row = self.cur.fetchone()
@@ -395,14 +381,7 @@ class Repo:
         self.cur.execute("INSERT INTO profesor (ime, priimek) VALUES (%s, %s)", (ime, priimek))
         self.conn.commit()
 
-    def dodaj_profesor_predmet(self, id_profesorja: int, id_predmeta: int):
-        self.cur.execute("""
-            INSERT INTO profesor_predmet (id_profesorja, id_predmeta)
-            VALUES (%s, %s)
-            ON CONFLICT DO NOTHING
-        """, (id_profesorja, id_predmeta))
-        self.conn.commit()
-        
+  
     def dodaj_predmet(self, predmet: Predmet) -> int:
         self.cur.execute("""
             INSERT INTO predmet (ime, izobrazevalni_program, letnik)

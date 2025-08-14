@@ -65,8 +65,7 @@ class ZapisekService:
             self.repo.dodaj_profesor(ime_profesorja, priimek_profesorja)
             profesor = self.repo.dobi_profesor_po_imenu(ime_profesorja, priimek_profesorja)
 
-        # Poveži profesorja s predmetom
-        self.repo.dodaj_profesor_predmet(profesor.id_profesorja, predmet.id_predmeta)
+        # Poveži profesorja s faksom
         self.repo.dodaj_profesor_faks(profesor.id_profesorja, faks.id_faksa)
         
         # Preveri, da so zahtevana polja v zapisku podana
@@ -83,6 +82,7 @@ class ZapisekService:
         # Doda zapisek
         zapisek.id_predmeta = predmet.id_predmeta
         zapisek.id_uporabnika = id_uporabnika
+        zapisek.id_profesorja = profesor.id_profesorja
 
         self.repo.dodaj_zapisek(zapisek)
         return True
@@ -134,8 +134,6 @@ class ZapisekService:
     def pridobi_prenesene_zapiske(self, id_uporabnika: int) -> List[Zapisek]:
         preneseni_idji = self.repo.dobi_prenose_uporabnika(id_uporabnika)
         return self.repo.pridobi_vec_zapiskov_s_podatki(preneseni_idji)
-
-
 
 #Brisanje zapiskov  
     def izbrisi_zapisek(self, id_zapiska: int, id_uporabnika: int) -> bool:

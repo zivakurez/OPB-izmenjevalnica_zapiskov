@@ -41,6 +41,7 @@ class Zapisek:
     download_link: str = field(default="")
     id_predmeta: int = field(default=0)
     id_uporabnika: int = field(default=0)
+    id_profesorja: int = field(default=0) 
 
 
 @dataclass_json
@@ -90,8 +91,3 @@ class ProfesorFaks:
     id_profesorja: int = field(default=0)
     id_faksa: int = field(default=0)
 
-@dataclass_json
-@dataclass
-class ProfesorPredmet:
-    id_profesorja: int = field(default=0)
-    id_predmeta: int = field(default=0)
