@@ -15,7 +15,6 @@ Aplikacija uporablja podatkovno bazo, ki hrani podatke o zapiskih, avtorjih, kom
 - **Upravljanje lastnih zapiskov** (brisanje, pregled prenesenih)  
 - **Podrobnosti posameznega zapiska**
 
----
 
 ## Uporaba aplikacije
 Ob obisku spletne strani Izmenjevalnica zapiskov se najprej prikaže prijavna stran, kjer lahko vnesete svoje uporabniško ime in geslo.
