@@ -37,3 +37,4 @@ Uporabniško ime za amdin-a je admin, geslo pa jazsemadmin.
 
 
 # ER diagram
+![ER diagram:](projektna_zapiski.png)
