@@ -1,4 +1,4 @@
-GRANT CONNECT ON DATABASE sem2025_kosmrma TO javnost;
+GRANT CONNECT ON DATABASE sem2025_kurezzi TO javnost;
 
 GRANT USAGE ON SCHEMA public TO javnost;
 

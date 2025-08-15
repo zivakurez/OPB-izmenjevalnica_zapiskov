@@ -43,7 +43,9 @@ CREATE TABLE zapisek (
   id_predmeta INTEGER,
   id_uporabnika INTEGER,
   FOREIGN KEY (id_uporabnika) REFERENCES uporabnik(id_uporabnika),
-  FOREIGN KEY (id_predmeta) REFERENCES predmet(id_predmeta)
+  FOREIGN KEY (id_predmeta) REFERENCES predmet(id_predmeta),
+  FOREIGN KEY (id_profesorja) REFERENCES profesor(id_profesorja)
+
 );
 
 -- Tabela komentar
@@ -87,13 +89,4 @@ CREATE TABLE profesor_faks (
   PRIMARY KEY (id_profesorja, id_faksa),
   FOREIGN KEY (id_profesorja) REFERENCES profesor(id_profesorja),
   FOREIGN KEY (id_faksa) REFERENCES faks(id_faksa)
-);
-
--- Tabela profesor_predmet
-CREATE TABLE profesor_predmet (
-  id_profesorja INT NOT NULL,
-  id_predmeta INT NOT NULL,
-  PRIMARY KEY (id_profesorja, id_predmeta),
-  FOREIGN KEY (id_profesorja) REFERENCES profesor(id_profesorja),
-  FOREIGN KEY (id_predmeta) REFERENCES predmet(id_predmeta)
 );
