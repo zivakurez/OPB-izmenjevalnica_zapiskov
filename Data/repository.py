@@ -3,6 +3,7 @@ import psycopg2.extensions
 import psycopg2.extras
 import os
 from typing import List, Optional
+import unicodedata as ud
 
 from Data.models import (
     Uporabnik, UporabnikDto, Zapisek, Komentar, Predmet, Profesor,
@@ -14,6 +15,9 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 
 # nastavimo povezavo do baze
 DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
+
+def norm(s):
+    return ud.normalize('NFC', s.strip()) if s else None
 
 class Repo:
     def __init__(self):
@@ -161,9 +165,11 @@ class Repo:
         ORDER BY z.datum_objave DESC, z.id_zapiska DESC;
         """, (id_uporabnika,))
         return [dict(row) for row in self.cur.fetchall()]
-
+    
 
     def filtriraj_zapiske(self, predmet, fakulteta, program, profesor):
+        # normalizacija šumnikov in odstranjevanje presledkov
+        predmet, fakulteta, program, profesor = map(norm, [predmet, fakulteta, program, profesor])
         query = """
             SELECT DISTINCT
                 z.id_zapiska,
@@ -184,22 +190,22 @@ class Repo:
         params = []
 
         if predmet:
-            query += " AND LOWER(p.ime) LIKE LOWER(%s)"
+            query += " AND p.ime ILIKE %s"
             params.append(f"%{predmet}%")
 
         if fakulteta:
-            query += " AND LOWER(f.ime) LIKE LOWER(%s)"
+            query += " AND LOWER(f.ime) ILIKE LOWER(%s)"
             params.append(f"%{fakulteta}%")
 
         if program:
-            query += " AND LOWER(p.izobrazevalni_program) LIKE LOWER(%s)"
+            query += " AND LOWER(p.izobrazevalni_program) ILIKE LOWER(%s)"
             params.append(f"%{program}%")
 
         if profesor:
             query += """
                 AND (
-                    LOWER(pr.ime) LIKE LOWER(%s) OR 
-                    LOWER(pr.priimek) LIKE LOWER(%s)
+                    LOWER(pr.ime) ILIKE LOWER(%s) OR 
+                    LOWER(pr.priimek) ILIKE LOWER(%s)
                 )
             """
             params.append(f"%{profesor}%")

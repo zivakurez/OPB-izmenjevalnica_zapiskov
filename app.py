@@ -84,10 +84,10 @@ def isci_zapiske():
     if not user_id:
         redirect('/prijava')
 
-    predmet = request.query.get('predmet') or None
-    fakulteta = request.query.get('fakulteta') or None
-    program = request.query.get('program') or None
-    profesor = request.query.get('profesor') or None
+    predmet = request.query.getunicode('predmet') or None
+    fakulteta = request.query.getunicode('fakulteta') or None
+    program = request.query.getunicode('program') or None
+    profesor = request.query.getunicode('profesor') or None
 
     zapiski = service.filtriraj_zapiske(predmet, fakulteta, program, profesor)
     
