@@ -16,8 +16,6 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 # nastavimo povezavo do baze
 DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
 
-def norm(s):
-    return ud.normalize('NFC', s.strip()) if s else None
 
 class Repo:
     def __init__(self):
@@ -168,8 +166,6 @@ class Repo:
     
 
     def filtriraj_zapiske(self, predmet, fakulteta, program, profesor):
-        # normalizacija šumnikov in odstranjevanje presledkov
-        predmet, fakulteta, program, profesor = map(norm, [predmet, fakulteta, program, profesor])
         query = """
             SELECT DISTINCT
                 z.id_zapiska,
@@ -190,26 +186,38 @@ class Repo:
         params = []
 
         if predmet:
-            query += " AND p.ime ILIKE %s"
+            query += " AND lower(p.ime) LIKE LOWER(%s)"
             params.append(f"%{predmet}%")
 
         if fakulteta:
-            query += " AND LOWER(f.ime) ILIKE LOWER(%s)"
+            query += " AND LOWER(f.ime) LIKE LOWER(%s)"
             params.append(f"%{fakulteta}%")
 
         if program:
-            query += " AND LOWER(p.izobrazevalni_program) ILIKE LOWER(%s)"
+            query += " AND LOWER(p.izobrazevalni_program) LIKE LOWER(%s)"
             params.append(f"%{program}%")
-
+            
         if profesor:
-            query += """
-                AND (
-                    LOWER(pr.ime) ILIKE LOWER(%s) OR 
-                    LOWER(pr.priimek) ILIKE LOWER(%s)
-                )
-            """
+            tokens = profesor.split() 
+            # ujemanje cele fraze (ime priimek) in obratno (priimek ime)
+            query += " AND ("
+            query += " LOWER(pr.ime || ' ' || pr.priimek) LIKE LOWER(%s)"
             params.append(f"%{profesor}%")
+            query += " OR LOWER(pr.priimek || ' ' || pr.ime) LIKE LOWER(%s)"
             params.append(f"%{profesor}%")
+
+            # zahtevamo, da je vsak token v imenu ali priimku (in med tokeni)
+            if tokens:
+                query += " OR ("
+                for i, t in enumerate(tokens):
+                    if i > 0:
+                        query += " AND "
+                    query += "(LOWER(pr.ime) LIKE LOWER(%s) OR LOWER(pr.priimek) LIKE LOWER(%s))"
+                    params.append(f"%{t}%")
+                    params.append(f"%{t}%")
+                query += ")"
+            query += ")"
+
 
         query += " ORDER BY z.datum_objave DESC"
 
